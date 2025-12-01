@@ -4,12 +4,83 @@ import java.util.*;
 
 public class Heroe extends Personaje {
    
-    private int danoHero=0,defHero=0;
-    private boolean vivoMonstruo=false;
+    private int danoHero = 0, defHero = 0;
+    private boolean vivoMonstruo = false;
     List<Habilidad> habilidades = new ArrayList<>();
+    //se agregan estos atributos para lo de los objetos de los personajes
+    private Map<String, Integer> inventario;
+    private Map<String, Objeto> catalogoObjetos;
 
     public Heroe(String nombre, int HP, int MP,int ataque, int defensa, int velocidad,TipoPersonajes person, String estado) {
         super(nombre, HP, MP, ataque, defensa, velocidad,person, estado);
+        this.inventario = new HashMap<>(); //esto de aqui es pa que empiece a funcionar el sistema de inventario
+        this.catalogoObjetos = new HashMap<>();
+        inicializarInventario();
+    }
+
+    public void inicializarInventario() {
+        // Crear catálogo de objetos disponibles
+        catalogoObjetos.put("Hierba medicinal", new Objeto("Hierba medicinal", "Cura 30 puntos de vida", TipoObjeto.CURATIVO, 30));
+        catalogoObjetos.put("Antídoto", new Objeto("Antídoto", "Cura estados de envenenamiento y sueño", TipoObjeto.ANTIDOTO, 0));
+        catalogoObjetos.put("Piedra de alma", new Objeto("Piedra de alma", "Revive a un compañero con 50% de vida", TipoObjeto.REVIVIR, getHP() / 2));
+        catalogoObjetos.put("Semilla de habilidad", new Objeto("Semilla de habilidad", "Restaura 10 puntos de magia", TipoObjeto.RESTAURAR_MP, 10));
+        catalogoObjetos.put("Cola de lagarto", new Objeto("Cola de lagarto", "Aumenta la defensa en 5 puntos por 3 turnos", TipoObjeto.MEJORAR_DEFENSA, 5, 3));
+        
+        // Dar cantidades iniciales de cada objeto (3 de cada uno)
+        for (String nombreObjeto : catalogoObjetos.keySet()) {
+            inventario.put(nombreObjeto, 3);
+        }
+    }
+    //este para agregar un objeto al inventario Ojito :p
+    public void agregarObjeto(String nombreObjeto, int cantidad) {
+        inventario.put(nombreObjeto, inventario.getOrDefault(nombreObjeto, 0) + cantidad);
+    }
+    //para usar algun objeto del inventario
+    public boolean usarObjeto(String nombreObjeto, Personaje objetivo) {
+        if (!inventario.containsKey(nombreObjeto) || inventario.get(nombreObjeto) <= 0) {
+            RegistroBatalla.RegistrarTextos(getNombre() + " no tiene " + nombreObjeto + " en el inventario.");
+            return false;
+        }
+        
+        if (!catalogoObjetos.containsKey(nombreObjeto)) {
+            RegistroBatalla.RegistrarTextos("El objeto " + nombreObjeto + " no existe en el catálogo.");
+            return false;
+        }
+        
+        Objeto objeto = catalogoObjetos.get(nombreObjeto);
+        boolean exito = objeto.usar(this, objetivo);
+        
+        if (exito) {
+            // Reducir la cantidad en el inventario
+            inventario.put(nombreObjeto, inventario.get(nombreObjeto) - 1);
+            
+            // Si se acaban, remover del inventario
+            if (inventario.get(nombreObjeto) <= 0) {
+                inventario.remove(nombreObjeto);
+            }
+        }
+        
+        return exito;
+    }
+    //para la cantidad disponibke de algun objeto
+    public int getCantidadObjeto(String nombreObjeto) {
+        return inventario.getOrDefault(nombreObjeto, 0);
+    }
+    //para obtener todo el inventario
+    public Map<String, Integer> getInventario() {
+        return new HashMap<>(inventario);
+    }
+    //muestra el inventario en el registro de la batalla
+    public void mostrarInventario() {
+        RegistroBatalla.RegistrarTextos(" Inventario de " + getNombre() + " ---");
+        if (inventario.isEmpty()) {
+            RegistroBatalla.RegistrarTextos("El inventario está vacío.");
+        } else {
+            for (Map.Entry<String, Integer> entry : inventario.entrySet()) {
+                RegistroBatalla.RegistrarTextos("- " + entry.getKey() + ": " + entry.getValue());
+            }
+        }
+        RegistroBatalla.RegistrarTextos("--------------------------------");
     }
 
     public void agregarHabilidad(Habilidad habilidad) {
