@@ -20,12 +20,79 @@ public class ControladorJuego {
     private int monsterPosition = -1;
     private int contadorSeleccion = 0;
     private boolean resultado;//Aqui se va a guardar el resultado acerca de que bando gano o perdio
+    //nuevos atributos para hacer lo de los objetos
+    private String objetoSeleccionado;
+    private boolean modoUsoObjeto = false;
 
     public ControladorJuego() {
         heroes = new ArrayList<>();
         monstruos = new ArrayList<>();
         musica = new MusicaFondo();
         batalla = new Batalla();
+        objetoSeleccionado = null;
+        modoUsoObjeto = false;
+    }
+    //se hacen nuevos metodos para lo del manejo de los objetos en el juego
+    public void activarModoObjetos(String nombreObjeto){
+        this.objetoSeleccionado = nombreObjeto;
+        this.modoUsoObjeto = true;
+        RegistroBatalla.RegistrarTextos("se activa el modo de objetos: " + nombreObjeto);
+        RegistroBatalla.RegistrarTextos("Selecciona un heroe para usar este objeto");
+        //con esto se habilitan los botones unicamente para los heroes vivos
+        for(Heroe h : heroes){
+            if(h.getBoton() != null && h.getEstado().equals("Vivo")){
+                h.getBoton().setEnabled(true);
+            }
+        }
+        //para desabilitar botones de monstruos
+        deactiveMonsterButton();
+        //para que no aparezcan de una en la pantalla principal
+        ventana.setBotonAcciones(false);
+    }
+    //este metodo para cancelar el uso de algun objeto
+    public void cancelarModoObjeto(){
+        this.objetoSeleccionado = null;
+        this.modoUsoObjeto = false;
+        ventana.setBotonAcciones(false);
+        enableHeroButton();
+        deactiveMonsterButton();
+    }
+    //usa un objeto sobre un heroe especifico
+    public void usarObjetoEnHeroe(Heroe heroeObjetivo){
+        if(!modoUsoObjeto || objetoSeleccionado == null || heroPosition == -1){
+            RegistroBatalla.RegistrarTextos("no hay objeto seleccionado o se hizo de modo incorrecto");
+            return;
+        }
+
+        Heroe heroeUsuario = heroes.get(heroPosition);
+        //verifica si el heroe(usuario :p) tiene ese objeto
+        if(heroeUsuario.getCantidadObjeto(objetoSeleccionado) <= 0){
+            RegistroBatalla.RegistrarTextos(heroeUsuario.getNombre() + " no tiene " + objetoSeleccionado);
+            cancelarModoObjeto();
+            return;
+        }
+
+        boolean exito = heroeUsuario.usarObjeto(objetoSeleccionado, heroeObjetivo);
+
+        if(exito){
+            ventana.actualizarPantalla(heroes, monstruos);
+        }
+        cancelarModoObjeto();
+        ReinicioVariables();
+    }
+    //para mostrar el inventario de un heroe especifico :D
+    public void mostrarInventarioHeroe(int posicionHeroe){
+        if(posicionHeroe >= 0 && posicionHeroe < heroes.size()){
+            Heroe heroe = heroes.get(posicionHeroe);
+            heroe.mostrarInventario();
+        }
+    }
+    //muestra el inventario de todos los heroes
+    public void mostrarInventariosCompletos(){
+        RegistroBatalla.RegistrarTextos(" HE AQUI LOS INVENTARIOS COMPLETOS WAOS :O ");
+        for(Heroe heroe : heroes){
+            heroe.mostrarInventario();
+        }
     }
 
     public void iniciarJuego() {
@@ -64,6 +131,9 @@ public class ControladorJuego {
         monstruos.add(monstruo2);
         monstruos.add(monstruo3);
         monstruos.add(monstruo4);
+        //temporar pa ver si funciona esta vuelta
+        heroe1.mostrarInventario();
+        heroe2.mostrarInventario();
     }
 
 
@@ -75,10 +145,15 @@ public class ControladorJuego {
     public void accionRegistrarTextArea(JTextArea txtRegistro){
          RegistroBatalla.setTextArea(txtRegistro);//Se añade JTextArea Ala clase para registrar las acciones en el JTextArea
     }
-
+    //se modifica este metodo para que se pueda manejar los objetos y asi :P
     public void personajeSeleccionado(Personaje p) {
 
         System.out.println("Seleccionado: " + p.getNombre());
+
+        if(modoUsoObjeto && p instanceof Heroe){
+            usarObjetoEnHeroe((Heroe) p);
+
+        }
 
     // Si es un héroe, instanceof permite saber si un objeto es perteneciente a alguna clase correspondiente a la que pertenezca su objeto especifico
     if (p instanceof Heroe) {
@@ -107,6 +182,7 @@ public class ControladorJuego {
         if (contadorSeleccion >= 2) {
          habilitarBotonesPrincipales();
          }
+         
    }
     
         //Metodo que Habilita Botones

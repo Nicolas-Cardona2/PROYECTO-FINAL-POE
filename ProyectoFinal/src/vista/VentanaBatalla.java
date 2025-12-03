@@ -22,6 +22,11 @@ public class VentanaBatalla extends JFrame {
 
     private JTextArea txtRegistro;
     private JButton botonAtk,botonDef,botonSkill,botonVolverJugar;
+    //nuevo panel de objetos segun los objetos xd
+    private JPanel panelObjetos;
+    private JButton[] botonesObjetos;
+    private JButton botonCancelarObjeto;
+    private JButton botonMostrarInventarios;
 
     public VentanaBatalla(ArrayList<Heroe> heroes, ArrayList<Monstruo> monstruos, ControladorJuego controlador) {
         this.heroes = heroes;
@@ -29,7 +34,7 @@ public class VentanaBatalla extends JFrame {
         this.controlador = controlador;
 
         setTitle("Dragon Quest VIII - Batalla");
-        setSize(1000, 650);
+        setSize(1200, 700); //se aumenta el ancho para los objetos y todo ese cuento
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -53,6 +58,79 @@ public class VentanaBatalla extends JFrame {
           panelCentral.add(panelMonstruos);
         add(panelCentral, BorderLayout.CENTER);
 
+        //nuevo panel a la izq para los objetos ojito :P
+        JPanel panelIzquierdo = new JPanel(new BorderLayout());
+        panelIzquierdo.setBackground(new Color(25,25,25));
+        panelIzquierdo.setPreferredSize(new Dimension(200, 0));
+        //Titulo del panel de los objetos
+        JLabel tituloObjetos = new JLabel("Objetos ", SwingConstants.CENTER);
+        tituloObjetos.setFont(new Font ("SansSerif", Font.BOLD, 16));
+        tituloObjetos.setForeground(Color.YELLOW);
+        tituloObjetos.setOpaque(true);
+        tituloObjetos.setBackground(new Color(40,40,40));
+        panelIzquierdo.add(tituloObjetos, BorderLayout.NORTH);
+        //panel con los botones de los objetos
+        panelObjetos = new JPanel(new GridLayout(6,1,5,5));
+        panelObjetos.setBackground(new Color(30,30,30));
+        panelObjetos.setBorder(BorderFactory.createEmptyBorder(10,5,10,5));
+        //se crean botones para los 5 objetos
+        String[] nombresObjetos = {
+            "Hierba medicinal",
+            "Antidoto",
+            "Piedra del alma",
+            "Semilla de habilidad",
+            "Cola de lagarto"
+        };
+
+        botonesObjetos = new JButton[nombresObjetos.length];
+
+        for(int i = 0; i < nombresObjetos.length; i++){
+            botonesObjetos[i] = new JButton(nombresObjetos[i]);
+            botonesObjetos[i].setFont(new Font("SansSerif", Font.PLAIN, 12));
+            botonesObjetos[i].setBackground(new Color(70, 90, 70));
+            botonesObjetos[i].setForeground(Color.WHITE);
+            botonesObjetos[i].setFocusPainted(false);
+            botonesObjetos[i].setEnabled(true);//inicialmente eran habilidades y asi
+
+            final String objeto = nombresObjetos[i];
+            botonesObjetos[i].addActionListener(e -> {
+                controlador.activarModoObjetos(objeto);
+                deshabilitarBotonesObjetos();
+            });
+            panelObjetos.add(botonesObjetos[i]);
+        }
+        //boton para cancelar el uso de objetos
+         botonCancelarObjeto = new JButton("Cancelar");
+        botonCancelarObjeto.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        botonCancelarObjeto.setBackground(new Color(90, 70, 70));
+        botonCancelarObjeto.setForeground(Color.WHITE);
+        botonCancelarObjeto.setFocusPainted(false);
+        botonCancelarObjeto.setEnabled(false);
+        botonCancelarObjeto.addActionListener(e -> {
+            controlador.cancelarModoObjeto();
+            habilitarBotonesObjetos();
+        });
+
+        panelObjetos.add(botonCancelarObjeto);
+        
+        panelIzquierdo.add(panelObjetos, BorderLayout.CENTER);
+        
+        // Botón para mostrar inventarios
+        botonMostrarInventarios = new JButton("Ver Inventarios");
+        botonMostrarInventarios.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        botonMostrarInventarios.setBackground(new Color(70, 70, 90));
+        botonMostrarInventarios.setForeground(Color.WHITE);
+        botonMostrarInventarios.setFocusPainted(false);
+        botonMostrarInventarios.addActionListener(e -> {
+            controlador.mostrarInventariosCompletos();
+        });
+
+        JPanel panelBotonInventario = new JPanel();
+        panelBotonInventario.setBackground(new Color(25, 25, 25));
+        panelBotonInventario.add(botonMostrarInventarios);
+        panelIzquierdo.add(panelBotonInventario, BorderLayout.SOUTH);
+        
+        add(panelIzquierdo, BorderLayout.WEST);
 
          //  Panel Derecho para Mensajes y Botones 
         JPanel panelDerecho = new JPanel(new BorderLayout());
@@ -222,8 +300,23 @@ public class VentanaBatalla extends JFrame {
     }
     return panel;
 }
-        //Getters y setters para habilitar y deshabilitar botones
-     public void setBotonAcciones(boolean b){
+//metodos nuevos para los botones de los objetos y sisas eso
+    private void deshabilitarBotonesObjetos() {
+        for (JButton boton : botonesObjetos) {
+            boton.setEnabled(false);
+        }
+        botonCancelarObjeto.setEnabled(true);
+    }
+    
+    private void habilitarBotonesObjetos() {
+        for (JButton boton : botonesObjetos) {
+            boton.setEnabled(true);
+        }
+        botonCancelarObjeto.setEnabled(false);
+    }
+
+    //Getters y setters para habilitar y deshabilitar botones(se modifica para incluir objetos )
+    public void setBotonAcciones(boolean b){
         enableAtacar(b);
         enableDefensa(b);
         enableHabilidad(b);
