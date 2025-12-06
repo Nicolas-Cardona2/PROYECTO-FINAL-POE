@@ -2,14 +2,41 @@ package modelo;
 
 import java.util.ArrayList;
 
+
+
 public class Batalla {
     //Estos variables guardan los turnos de estos estado alterados
-    private int turno=0;
+    private int turno=0,unaVez=1;
     private  boolean todosMonstruosDead=true,todosHeroesDead=true,todosPersonajesMurieron=true, endPartida=true;
+    ArrayList <Heroe> auxiliarHeroes;
+    ArrayList <Monstruo> auxiliarMonstruos;
 
     public boolean EmpezarBatalla(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton){//Determinara quienes se enfrentan primero por medio de saber su velocidad
        
-        
+        if(unaVez==1){//Guardar Valores Predeterminados de los Monstruos y Heroes
+          
+          auxiliarHeroes = new ArrayList<>();
+          for (Heroe value : listHeroes) {//Se hace con el objetivo de guardar un clone u copia que apuntan a otro puntero no al mismo
+              //Se inicializa con los valores de listHeroes 
+             Heroe clone = new Heroe(
+              value.getNombre(),value.getHP(),value.getMP(),value.getAtaque(),value.getDefensa(),
+              value.getVelocidad(),value.getTipoPersonaje(),value.getEstado(),value.getTurno()
+            );
+            auxiliarHeroes.add(clone);//Se van añadiendo los valores predeterminados de cada heroe
+          }
+
+          auxiliarMonstruos = new ArrayList<>();
+          for (Monstruo value : listMonstruos) {//Se hace con el objetivo de guardar un clone u copia que apuntan a otro puntero no al mismo
+              //Se inicializa con los valores de listMonstruos 
+             Monstruo clone = new Monstruo(
+              value.getNombre(),value.getHP(),value.getMP(),value.getAtaque(),value.getDefensa(),
+              value.getVelocidad(),value.getTipoPersonaje(),value.getEstado(),value.getTurno()
+            );
+            auxiliarMonstruos.add(clone);//Se van añadiendo los valores predeterminados de cada Monstruo
+          }
+
+          unaVez=0;
+        }
       //Cuando terminar Partida sea False se acaba la partida 
               //el heroe tiene velocidad mayor arranca turno primero de lo contrario arranca el monstruo
                 if(listHeroes.get(posicionHero).getVelocidad() > listMonstruos.get(posicionMonster).getVelocidad()){
@@ -85,21 +112,60 @@ public class Batalla {
                    RegistroBatalla.RegistrarTextos(listHeroes.get(posicionHero).getNombre() + " Sigue  Durmiendo....");
                }
 
-            }else if(listHeroes.get(posicionHero).getEstado().equals("BuffAtake")){
-                turno=listHeroes.get(posicionHero).getTurno();//Obtiene valor de turno asignado
+            }else if(listHeroes.get(posicionHero).getEstado().equals("Defensa")){
+                    
+                    if(listHeroes.get(posicionHero).getTurno()!=0){
+                          turno = listHeroes.get(posicionHero).getTurno();
+                          //Le resta de 1 en 1
+                         turno--;
+                         listHeroes.get(posicionHero).setTurno(turno);  
+                          //Para determinar Cuando ya se terminaron los turnos de esa Habilidad
+                          if(listHeroes.get(posicionHero).getTurno()==0){
+                            //Estas dos lineas lo que hacen es volverle a poner el valor de atake y defensa que tenian por defecto
+                           listHeroes.get(posicionHero).setAtaque(auxiliarHeroes.get(posicionHero).getAtaque());
+                           listHeroes.get(posicionHero).setDefensa(auxiliarHeroes.get(posicionHero).getDefensa());
+                           listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
+                          }
+                          listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                    }else{
+                      listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                    }
 
-                if(nombreBoton.equals("atacar")){//Si la Accion es atakar se gasta un turno con el buff de Atake
-                            //Le resta de 1 en 1
-                            turno--;
-                    listHeroes.get(posicionHero).setTurno(turno);
-                }   
+            }else if(listHeroes.get(posicionHero).getEstado().equals("BuffAtake")){
+                 //Esta linea lo que hace es volverle a poner el valor de Defensa que tenia por defecto
+                  listHeroes.get(posicionHero).setDefensa(auxiliarHeroes.get(posicionHero).getDefensa());
+                  turno=listHeroes.get(posicionHero).getTurno();//Obtiene valor de turno asignado
+                  //Se gasta Turno del buff por cada Accion Realizada
+                  //Le resta de 1 en 1
+                  turno--;
+                  listHeroes.get(posicionHero).setTurno(turno);  
                   //Para determinar Cuando ya se terminaron los turnos de esa Habilidad
                 if(listHeroes.get(posicionHero).getTurno()==0){
+                     //Esta linea lo que hace es volverle a poner el valor de atake que tenia por defecto
+                  listHeroes.get(posicionHero).setAtaque(auxiliarHeroes.get(posicionHero).getAtaque());
                   listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
                 }
 
                 listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
-            }else{
+           
+           }else if(listHeroes.get(posicionHero).getEstado().equals("BuffDefensa")){
+                listHeroes.get(posicionHero).setAtaque(auxiliarHeroes.get(posicionHero).getAtaque());//Vuelve a su atk predeterminado
+                turno=listHeroes.get(posicionHero).getTurno();//Obtiene valor de turno asignado
+                
+                    //Le resta de 1 en 1
+                    turno--;
+                    listHeroes.get(posicionHero).setTurno(turno);
+                  //Para determinar Cuando ya se terminaron los turnos de esa Habilidad
+                if(listHeroes.get(posicionHero).getTurno()==0){
+                     //Esta linea lo que hace es volverle a poner el valor de Defensa que tenia por defecto
+                  listHeroes.get(posicionHero).setDefensa(auxiliarHeroes.get(posicionHero).getDefensa());
+                  listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
+                }
+
+                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+           
+
+           } else{
                 listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
             }
 
@@ -112,17 +178,75 @@ public class Batalla {
             }else if(listMonstruos.get(posicionMonster).getEstado().equals("Muerto")){
              
               
-            }else if(listMonstruos.get(posicionMonster).getEstado().equals("BuffAtake")){
-                turno=listMonstruos.get(posicionMonster).getTurno();//Obtiene valor de turno asignado
+            }else if(listMonstruos.get(posicionMonster).getEstado().equals("Paralizado")){
+                 
+                  listMonstruos.get(posicionMonster).setAtaque(auxiliarMonstruos.get(posicionMonster).getAtaque());
+                  //Esta linea lo que hace es volverle a poner el valor de defensa que tenia por defecto
+                  listMonstruos.get(posicionMonster).setDefensa(auxiliarMonstruos.get(posicionMonster).getDefensa());
+                  turno=listMonstruos.get(posicionMonster).getTurno();//Obtiene valor de turno asignado
 
+                   //Se gasta Turno del buff por cada Accion Realizada
+                    //Le resta de 1 en 1
+                    turno--;
+                    listMonstruos.get(posicionMonster).setTurno(turno);
                 if(listMonstruos.get(posicionMonster).getTurno()==0){
+                  //Esta linea lo que hace es volverle a poner el valor de atake que tenia por defecto
+                  listMonstruos.get(posicionMonster).setVelocidad(auxiliarMonstruos.get(posicionMonster).getVelocidad());
                   listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
-                }else if(nombreBoton.equals("atacar")){//Si la Accion es atakar se gasta un turno con el buff de Atake
+                }
+               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+
+            }else if(listMonstruos.get(posicionMonster).getEstado().equals("Defensa")){
+                    
+                    if(listMonstruos.get(posicionMonster).getTurno()!=0){
+                          turno = listMonstruos.get(posicionMonster).getTurno();
                           //Le resta de 1 en 1
-                    listMonstruos.get(posicionMonster).setTurno(turno--);
+                         turno--;
+                         listMonstruos.get(posicionMonster).setTurno(turno);  
+                          //Para determinar Cuando ya se terminaron los turnos de esa Habilidad
+                          if(listMonstruos.get(posicionMonster).getTurno()==0){
+                            //Estas dos lineas lo que hacen es volverle a poner el valor de atake y defensa que tenian por defecto
+                           listMonstruos.get(posicionMonster).setAtaque(auxiliarMonstruos.get(posicionMonster).getAtaque());
+                           listMonstruos.get(posicionMonster).setDefensa(auxiliarMonstruos.get(posicionMonster).getDefensa());
+                           listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
+                          }
+                          listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                    }else{
+                      listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                    }
+
+            }else if(listMonstruos.get(posicionMonster).getEstado().equals("BuffAtake")){
+                  //Esta linea lo que hace es volverle a poner el valor de defensa que tenia por defecto
+                  listMonstruos.get(posicionMonster).setDefensa(auxiliarMonstruos.get(posicionMonster).getDefensa());
+                  turno=listMonstruos.get(posicionMonster).getTurno();//Obtiene valor de turno asignado
+
+                   //Se gasta Turno del buff por cada Accion Realizada
+                    //Le resta de 1 en 1
+                    turno--;
+                    listMonstruos.get(posicionMonster).setTurno(turno);
+                if(listMonstruos.get(posicionMonster).getTurno()==0){
+                  //Esta linea lo que hace es volverle a poner el valor de atake que tenia por defecto
+                  listMonstruos.get(posicionMonster).setAtaque(auxiliarMonstruos.get(posicionMonster).getAtaque());
+                  listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
                 }
                listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
             
+            }else if(listMonstruos.get(posicionMonster).getEstado().equals("BuffDefensa")){
+                    //Vuelve a valor por defecto del atake
+                listMonstruos.get(posicionMonster).setAtaque(auxiliarMonstruos.get(posicionMonster).getAtaque());
+                turno=listMonstruos.get(posicionMonster).getTurno();//Obtiene valor de turno asignado
+
+                   //Se gasta Turno del buff por cada Accion Realizada
+                    //Le resta de 1 en 1
+                    turno--;
+                    listMonstruos.get(posicionMonster).setTurno(turno);
+                if(listMonstruos.get(posicionMonster).getTurno()==0){
+                  //Esta linea lo que hace es volverle a poner el valor de defensa que tenia por defecto
+                  listMonstruos.get(posicionMonster).setDefensa(auxiliarMonstruos.get(posicionMonster).getDefensa());
+                  listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
+                }
+               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+
             }else{
                 listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
                  System.out.println(" ");//Salto de linea
@@ -186,7 +310,7 @@ public class Batalla {
 
        return position;//Devuelve Posicion Exacta
     }
-
+    
       //Metodo Creado con el objetivo de reiniciar los datos para jugar otras batallas
     public void ResetDatosBatalla(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos){
             //Reestableciendo Valores de Heroes

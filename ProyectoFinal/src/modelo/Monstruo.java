@@ -76,7 +76,7 @@ public class Monstruo extends Personaje {
        }
         Heroe objetivo = listHeroes.get(heroRandom);
 
-        switch (accion) {
+        switch (accion) { 
             case 0:
                 if (objetivo.getEstado().equals("Muerto")){
 

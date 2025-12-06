@@ -9,6 +9,7 @@ import modelo.*;
 import util.MusicaFondo;
 import vista.VentanaBatalla;
 
+
 public class ControladorJuego {
 
     private ArrayList<Heroe> heroes;
@@ -102,6 +103,7 @@ public class ControladorJuego {
     }
 
     public void crearPersonajes() {
+        
         Heroe heroe1 = new Heroe("El Héroe", 40, 9, 22, 18, 12, TipoPersonajes.GUERRERO_BALANCEADO, "Vivo",0);
         Heroe heroe2 = new Heroe("Yangus", 50, 5, 28, 12, 8, TipoPersonajes.TANQUE, "Vivo",0);
         Heroe heroe3 = new Heroe("Jessica", 30, 20, 15, 9, 14, TipoPersonajes.MAGO_OFENSIVO, "Vivo",0);
@@ -114,21 +116,30 @@ public class ControladorJuego {
 
         heroe1.agregarHabilidad(new Habilidad("Golpe de espada", 3, 0, TipoHabilidad.DANIO_MAGICO));
         heroe1.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        heroe1.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
         heroe2.agregarHabilidad(new Habilidad("Golpe de Hacha", 5, 0, TipoHabilidad.DANIO_MAGICO));
         heroe2.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        heroe2.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
         heroe3.agregarHabilidad(new Habilidad("Bola de fuego", 4, 0, TipoHabilidad.DANIO_MAGICO));
+        heroe3.agregarHabilidad(new Habilidad("Stun Slash?", 4, 0, TipoHabilidad.PARALYSIS));
         heroe3.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        heroe3.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));  
         heroe4.agregarHabilidad(new Habilidad("Curación", 3, 12, TipoHabilidad.CURACION));
         heroe4.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        heroe4.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
 
         monstruo1.agregarHabilidad(new Habilidad("Saltar Encima", 2, 0, TipoHabilidad.DANIO_MAGICO));
         monstruo1.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        monstruo1.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
         monstruo2.agregarHabilidad(new Habilidad("Aliento de Fuego", 6, 0, TipoHabilidad.DANIO_MAGICO));
         monstruo2.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        monstruo2.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
         monstruo3.agregarHabilidad(new Habilidad("Golpe de Espada", 3, 0, TipoHabilidad.DANIO_MAGICO));
         monstruo3.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        monstruo3.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
         monstruo4.agregarHabilidad(new Habilidad("Rayo de Fuego", 5, 0, TipoHabilidad.DANIO_MAGICO));
         monstruo4.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
+        monstruo4.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
 
         heroes.add(heroe1);
         heroes.add(heroe2);
@@ -143,7 +154,6 @@ public class ControladorJuego {
         heroe1.mostrarInventario();
         heroe2.mostrarInventario();
     }
-
 
     private void crearVista() {
         ventana = new VentanaBatalla(heroes, monstruos, this);

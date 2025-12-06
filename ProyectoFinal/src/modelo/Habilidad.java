@@ -82,16 +82,36 @@ public class Habilidad {
                     int buffAtake=0;
                         jugador.setEstado("BuffAtake");
                         jugador.setTurno(2);//El estado dura dos Turnos A menos que halla un cambio de estado
-                        buffAtake= jugador.getAtaque() + ((jugador.getAtaque()*50)/100);
+                        buffAtake= jugador.getAtaque() + ((jugador.getAtaque()*50)/100);//Mejora el 50% del Atake
                         jugador.setAtaque(buffAtake);
-                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y mejora su Atake" + buffAtake);
+                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y mejora su Atake a: " + buffAtake);
                         esVivo=true;
                         break;
 
+            case BUFF_DE_DEFENSA:
+                        int buffDefensa=0;
+                        jugador.setEstado("BuffDefensa");
+                        jugador.setTurno(2);//El estado dura dos Turnos A menos que halla un cambio de estado
+                        buffDefensa= jugador.getDefensa() + ((jugador.getDefensa()*50)/100);//Mejora el 50% De Defensa
+                        jugador.setDefensa(buffDefensa);
+                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y mejora su Defensa a: " + buffDefensa);
+                        esVivo=true;
+
+                        break;
+
+            case PARALYSIS:
+                        int paralysis=0;
+                        objetivo.setEstado("Paralizado");
+                        objetivo.setTurno(2);//El estado dura dos Turnos A menos que halla un cambio de estado
+                        paralysis= objetivo.getVelocidad()/2;//Se le reduce ala mitad la velocidad
+                        objetivo.setVelocidad(paralysis);
+                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y a Dejado Paralizado a: " + objetivo.getNombre());
+                        esVivo=true;
+                        break;
              default:
                 break;
              }
-           jugador.setMP(jugador.getMP() - costoMp);;//Resta Poder
+           jugador.setMP(jugador.getMP() - costoMp);//Resta Poder
         }
        
          RegistroBatalla.RegistrarTextos(jugador.getNombre()+" Ha Quedado Con: "+ jugador.getMP()+" MP Disponible");
