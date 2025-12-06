@@ -16,11 +16,12 @@ public abstract class Personaje {
     private int defensa;
     private int velocidad;
     private String estado;
+    private int turnos;
     private TipoPersonajes person;
     private JButton boton;
     JProgressBar barraHP,barraMP,barraEstado;
 
-    public Personaje(String nombre, int HP, int MP,int ataque, int defensa, int velocidad,TipoPersonajes person, String estado) {
+    public Personaje(String nombre, int HP, int MP,int ataque, int defensa, int velocidad,TipoPersonajes person, String estado,int turnos) {
         this.nombre = nombre;
         this.HP = HP;
         this.MP = MP;
@@ -29,6 +30,7 @@ public abstract class Personaje {
         this.velocidad = velocidad;
         this.person = person;
         this.estado = estado;
+        this.turnos = turnos;
     }
 
      //Getter de un Enum
@@ -78,6 +80,13 @@ public abstract class Personaje {
     public void setEstado(String estado) {
         this.estado = estado;
     }
+    public int getTurno() {
+        return turnos;
+    }
+    public void setTurno(int turnos) {
+        this.turnos = turnos;
+    }
+
        //Creacion de sets barras de los JProgress bar con el objetivo de actualizarlos en tiempo real
      public void setBarraHP(JProgressBar barraHP){
             this.barraHP = barraHP;

@@ -3,7 +3,8 @@ package modelo;
 import java.util.ArrayList;
 
 public class Batalla {
-
+    //Estos variables guardan los turnos de estos estado alterados
+    private int turno=0;
     private  boolean todosMonstruosDead=true,todosHeroesDead=true,todosPersonajesMurieron=true, endPartida=true;
 
     public boolean EmpezarBatalla(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton){//Determinara quienes se enfrentan primero por medio de saber su velocidad
@@ -84,6 +85,20 @@ public class Batalla {
                    RegistroBatalla.RegistrarTextos(listHeroes.get(posicionHero).getNombre() + " Sigue  Durmiendo....");
                }
 
+            }else if(listHeroes.get(posicionHero).getEstado().equals("BuffAtake")){
+                turno=listHeroes.get(posicionHero).getTurno();//Obtiene valor de turno asignado
+
+                if(nombreBoton.equals("atacar")){//Si la Accion es atakar se gasta un turno con el buff de Atake
+                            //Le resta de 1 en 1
+                            turno--;
+                    listHeroes.get(posicionHero).setTurno(turno);
+                }   
+                  //Para determinar Cuando ya se terminaron los turnos de esa Habilidad
+                if(listHeroes.get(posicionHero).getTurno()==0){
+                  listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
+                }
+
+                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
             }else{
                 listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
             }
@@ -95,7 +110,19 @@ public class Batalla {
        if(listHeroes.get(0).getEstado().equals("Muerto") && listHeroes.get(1).getEstado().equals("Muerto") && listHeroes.get(2).getEstado().equals("Muerto") && listHeroes.get(3).getEstado().equals("Muerto")){
                 TerminarBatalla(listHeroes, listMonstruos);
             }else if(listMonstruos.get(posicionMonster).getEstado().equals("Muerto")){
-               
+             
+              
+            }else if(listMonstruos.get(posicionMonster).getEstado().equals("BuffAtake")){
+                turno=listMonstruos.get(posicionMonster).getTurno();//Obtiene valor de turno asignado
+
+                if(listMonstruos.get(posicionMonster).getTurno()==0){
+                  listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
+                }else if(nombreBoton.equals("atacar")){//Si la Accion es atakar se gasta un turno con el buff de Atake
+                          //Le resta de 1 en 1
+                    listMonstruos.get(posicionMonster).setTurno(turno--);
+                }
+               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+            
             }else{
                 listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
                  System.out.println(" ");//Salto de linea

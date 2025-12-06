@@ -10,8 +10,8 @@ public class Monstruo extends Personaje {
     private boolean vivoHeroe=false;
     private List<Habilidad> habilidades = new ArrayList<>();
 
-    public Monstruo(String nombre, int HP, int MP, int ataque, int defensa, int velocidad, TipoPersonajes person, String estado) {
-        super(nombre, HP, MP, ataque, defensa, velocidad, person, estado);
+    public Monstruo(String nombre, int HP, int MP, int ataque, int defensa, int velocidad, TipoPersonajes person, String estado,int turnos) {
+        super(nombre, HP, MP, ataque, defensa, velocidad, person, estado,turnos);
     }
 
     public void agregarHabilidad(Habilidad habilidad) {
