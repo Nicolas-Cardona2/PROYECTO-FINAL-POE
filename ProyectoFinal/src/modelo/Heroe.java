@@ -11,8 +11,8 @@ public class Heroe extends Personaje {
     private Map<String, Integer> inventario;
     private Map<String, Objeto> catalogoObjetos;
 
-    public Heroe(String nombre, int HP, int MP,int ataque, int defensa, int velocidad,TipoPersonajes person, String estado) {
-        super(nombre, HP, MP, ataque, defensa, velocidad,person, estado);
+    public Heroe(String nombre, int HP, int MP,int ataque, int defensa, int velocidad,TipoPersonajes person, String estado,int turnos) {
+        super(nombre, HP, MP, ataque, defensa, velocidad,person, estado,turnos);
         this.inventario = new HashMap<>(); //esto de aqui es pa que empiece a funcionar el sistema de inventario
         this.catalogoObjetos = new HashMap<>();
         inicializarInventario();
@@ -182,9 +182,9 @@ public class Heroe extends Personaje {
             if (habilidades.isEmpty()) {
                 System.out.println(getNombre() + " no tiene habilidades disponibles.");
                 break;
-            }
-
-            int eleccion = 0;//Todos tienen una habilidad por ahora por lo tanto no tiene caso poner a escojer momentaneamente
+            } 
+                //Se escoje que habilidad Utilizar
+            int eleccion = 1;//Todos tienen una habilidad por ahora por lo tanto no tiene caso poner a escojer momentaneamente
             if (eleccion >= 0 && eleccion < habilidades.size()) {
                 Habilidad habilidad = habilidades.get(eleccion);
 

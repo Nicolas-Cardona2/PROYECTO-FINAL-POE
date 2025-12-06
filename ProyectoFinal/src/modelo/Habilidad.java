@@ -1,5 +1,7 @@
 package modelo;
 
+
+
 public class Habilidad {
     private String nombre; // no es nombre de personaje sino de la habilidad jsjs
     private int costoMp;
@@ -32,7 +34,7 @@ public class Habilidad {
 
     public boolean usar(Personaje jugador, Personaje objetivo){
        
-        if(jugador.getMP() <= 0){
+        if(jugador.getMP() < costoMp){
              RegistroBatalla.RegistrarTextos(jugador.getNombre() + " no hay suficiente MP para tirar un ataque " + nombre);
             esVivo=true;
         }else{
@@ -76,60 +78,93 @@ public class Habilidad {
                 
                 break;
 
+            case BUFF_DE_ATAQUE:
+                    int buffAtake=0;
+                        jugador.setEstado("BuffAtake");
+                        jugador.setTurno(2);//El estado dura dos Turnos A menos que halla un cambio de estado
+                        buffAtake= jugador.getAtaque() + ((jugador.getAtaque()*50)/100);//Mejora el 50% del Atake
+                        jugador.setAtaque(buffAtake);
+                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y mejora su Atake a: " + buffAtake);
+                        esVivo=true;
+                        break;
+
+            case BUFF_DE_DEFENSA:
+                        int buffDefensa=0;
+                        jugador.setEstado("BuffDefensa");
+                        jugador.setTurno(2);//El estado dura dos Turnos A menos que halla un cambio de estado
+                        buffDefensa= jugador.getDefensa() + ((jugador.getDefensa()*50)/100);//Mejora el 50% De Defensa
+                        jugador.setDefensa(buffDefensa);
+                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y mejora su Defensa a: " + buffDefensa);
+                        esVivo=true;
+
+                        break;
+
+            case PARALYSIS:
+                        int paralysis=0;
+                        objetivo.setEstado("Paralizado");
+                        objetivo.setTurno(2);//El estado dura dos Turnos A menos que halla un cambio de estado
+                        paralysis= objetivo.getVelocidad()/2;//Se le reduce ala mitad la velocidad
+                        objetivo.setVelocidad(paralysis);
+                        RegistroBatalla.RegistrarTextos(jugador.getNombre() + " usa " + nombre + " Y a Dejado Paralizado a: " + objetivo.getNombre());
+                        esVivo=true;
+                        break;
              default:
                 break;
              }
-        
+           jugador.setMP(jugador.getMP() - costoMp);//Resta Poder
         }
-        gastoMp(jugador);//Resta Poder
+       
          RegistroBatalla.RegistrarTextos(jugador.getNombre()+" Ha Quedado Con: "+ jugador.getMP()+" MP Disponible");
         return esVivo;//Me devuelve un true o false para saber si el heroe o mostruo esta vivo o muerto
     }
           //Este metodo Muestra el gasto de MP dependiendo de cada personaje 
-     public void gastoMp(Personaje jugador){
+     /*public void gastoMp(Personaje jugador){
 
         switch (jugador.getNombre()) {
             case "El Héroe":  //Gasta 3MP
-                  jugador.setMP(jugador.getMP() - 3);
+
+                            jugador.setMP(jugador.getMP() - costoMp);
                 break;
 
              case "Yangus":  //Gasta 5MP
-                 jugador.setMP(jugador.getMP() - 5);
+                 jugador.setMP(jugador.getMP() - costoMp);
                 break;
 
              case "Jessica":   //Gasta 4MP
-                 jugador.setMP(jugador.getMP() - 4);
+                 jugador.setMP(jugador.getMP() - costoMp);
                 break;
              case "Angelo":   //Gasta 5MP
-                 jugador.setMP(jugador.getMP() - 5);
+                 jugador.setMP(jugador.getMP() - costoMp);
                 break;
 
               case "SlimeBoy":  //Gasta 2MP
-                  jugador.setMP(jugador.getMP() - 2);
+                  jugador.setMP(jugador.getMP() - costoMp);
                 break;
 
              case "Dragon":  //Gasta 6MP
-                 jugador.setMP(jugador.getMP() - 6);
+                 jugador.setMP(jugador.getMP() - costoMp);
                 break;
 
              case "Esqueleto":   //Gasta 3MP
-                 jugador.setMP(jugador.getMP() - 3);
+                 jugador.setMP(jugador.getMP() - costoMp);
                 break;
              case "Hechicero":   //Gasta 5MP
-                 jugador.setMP(jugador.getMP() - 5);
+                 jugador.setMP(jugador.getMP() - costoMp);
                 break;  
         
             default:
                 break;
         }
          if(jugador.getMP()<=0) jugador.setMP(0);
-  }
+  }*/
     //Metodo que establece el daño magico de cada enemigo todo varia en su multiplicador de daño
 public int dañosMp(Personaje jugador,Personaje objetivo,int random){
   int danoMp=0; 
         switch (jugador.getNombre()) {
-            case "El Héroe":  
-                  danoMp= (int)((jugador.getAtaque() * 1.2) - (objetivo.getDefensa() / 2) + random);
+            case "El Héroe":  //Condicional que permite determinar la habilidad especifica escojida para ejecutarla
+                              if(nombre.equals("Golpe de espada")){
+                                  danoMp= (int)((jugador.getAtaque() * 1.2) - (objetivo.getDefensa() / 2) + random);
+                              }
                 break;
 
              case "Yangus":  
