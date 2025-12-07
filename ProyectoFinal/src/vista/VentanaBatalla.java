@@ -27,6 +27,8 @@ public class VentanaBatalla extends JFrame {
     private JButton[] botonesObjetos;
     private JButton botonCancelarObjeto;
     private JButton botonMostrarInventarios;
+    private JButton botonGuardarPartida;
+    private JButton botonVolverMenu;
 
     public VentanaBatalla(ArrayList<Heroe> heroes, ArrayList<Monstruo> monstruos, ControladorJuego controlador) {
         this.heroes = heroes;
@@ -151,31 +153,46 @@ public class VentanaBatalla extends JFrame {
         //Registra Correctamante todo lo que sucede en batalla
         controlador.accionRegistrarTextArea(txtRegistro);
         // Botones de acción debajo
-        JPanel panelBotones = new JPanel(new GridLayout(4, 1, 10, 10));
+        JPanel panelBotones = new JPanel(new GridLayout(6, 1, 10, 10)); // Cambiado de 4 a 6
         panelBotones.setBackground(new Color(25, 25, 25));
-      
-        botonAtk = new JButton("Atacar");
+
+        botonAtk = new JButton("⚔ Atacar");
         botonAtk.setFont(new Font("SansSerif", Font.BOLD, 16));
         botonAtk.setBackground(new Color(70, 70, 90));
         botonAtk.setForeground(Color.WHITE);
         botonAtk.setFocusPainted(false);
         panelBotones.add(botonAtk);
 
-        botonDef = new JButton("Defender");
+        botonDef = new JButton("🛡 Defender");
         botonDef.setFont(new Font("SansSerif", Font.BOLD, 16));
         botonDef.setBackground(new Color(70, 70, 90));
         botonDef.setForeground(Color.WHITE);
         botonDef.setFocusPainted(false);
         panelBotones.add(botonDef);
 
-        botonSkill = new JButton("Habilidad");
+        botonSkill = new JButton("✨ Habilidad");
         botonSkill.setFont(new Font("SansSerif", Font.BOLD, 16));
         botonSkill.setBackground(new Color(70, 70, 90));
         botonSkill.setForeground(Color.WHITE);
         botonSkill.setFocusPainted(false);
         panelBotones.add(botonSkill);
 
-         botonVolverJugar = new JButton("Volver a Jugar");
+        // NUEVOS BOTONES
+        botonGuardarPartida = new JButton("💾 Guardar Partida");
+        botonGuardarPartida.setFont(new Font("SansSerif", Font.BOLD, 16));
+        botonGuardarPartida.setBackground(new Color(50, 90, 50)); // Verde
+        botonGuardarPartida.setForeground(Color.WHITE);
+        botonGuardarPartida.setFocusPainted(false);
+        panelBotones.add(botonGuardarPartida);
+
+        botonVolverMenu = new JButton("⬅ Volver al Menú");
+        botonVolverMenu.setFont(new Font("SansSerif", Font.BOLD, 16));
+        botonVolverMenu.setBackground(new Color(90, 70, 50)); // Marrón
+        botonVolverMenu.setForeground(Color.WHITE);
+        botonVolverMenu.setFocusPainted(false);
+        panelBotones.add(botonVolverMenu);
+
+        botonVolverJugar = new JButton("🔄 Volver a Jugar");
         botonVolverJugar.setFont(new Font("SansSerif", Font.BOLD, 16));
         botonVolverJugar.setBackground(new Color(70, 70, 90));
         botonVolverJugar.setForeground(Color.WHITE);
@@ -317,21 +334,28 @@ public class VentanaBatalla extends JFrame {
 
     //Getters y setters para habilitar y deshabilitar botones(se modifica para incluir objetos )
     public void setBotonAcciones(boolean b){
-        enableAtacar(b);
-        enableDefensa(b);
-        enableHabilidad(b);
-        enableVolverJugar(b);
-
-     }
-     public void enableAtacar(boolean b){ botonAtk.setEnabled(b); }
+    enableAtacar(b);
+    enableDefensa(b);
+    enableHabilidad(b);
+    enableVolverJugar(b);
+    // Los nuevos botones siempre están habilitados durante la partida
+    enableGuardarPartida(true);
+    enableVolverMenu(true);
+}
+    public void enableAtacar(boolean b){ botonAtk.setEnabled(b); }
     public void enableDefensa(boolean b){ botonDef.setEnabled(b); }
     public void enableHabilidad(boolean b){ botonSkill.setEnabled(b); }
     public void enableVolverJugar(boolean b){ botonVolverJugar.setEnabled(b); }
+    public void enableGuardarPartida(boolean b){ botonGuardarPartida.setEnabled(b); }
+    public void enableVolverMenu(boolean b){ botonVolverMenu.setEnabled(b); }
 
     public JButton getEnableAtacar(boolean b){ return botonAtk; }
     public JButton getEnableDefensa(boolean b){ return botonDef; }
     public JButton getEnableHabilidad(boolean b){ return botonSkill; }
     public JButton getEnableVolverJugar(boolean b){ return botonVolverJugar; }
+    public JButton getBotonGuardarPartida(){ return botonGuardarPartida; }
+    public JButton getBotonVolverMenu(){ return botonVolverMenu; }
+    
 
   private void asignarEventoBotonPersonaje(JButton boton, Personaje p){
 
@@ -353,38 +377,77 @@ public class VentanaBatalla extends JFrame {
      }
         //Metodo donde se configuran los eventos de los botones principales de las acciones
     
-     private void configurarEventos() {
+    private void configurarEventos() {
         botonAtk.addActionListener(e -> ejecutarAccion("atacar"));
         botonDef.addActionListener(e -> ejecutarAccion("defender"));
         botonSkill.addActionListener(e -> ejecutarAccion("habilidad"));
         botonVolverJugar.addActionListener(e -> ejecutarAccion("Volver a Jugar"));
-    }
+        
+        // NUEVOS EVENTOS
+        botonGuardarPartida.addActionListener(e -> ejecutarAccion("guardar"));
+        botonVolverMenu.addActionListener(e -> ejecutarAccion("volver_menu"));
+}
    //Metodo donde se ejecutan los eventos de los botones principales 
-    public void ejecutarAccion(String accion){// Ellos se comunican con metodos de controloador
+    public void ejecutarAccion(String accion){
+    switch (accion) {
+        case "atacar":
+            controlador.atacar();
+            break;
+        
+        case "defender":
+            controlador.defender();
+            break;
 
-        switch (accion) {
-            case "atacar":
-                    controlador.atacar();
-                break;
+        case "habilidad":
+            controlador.habilidad();
+            break;
+
+        case "Volver a Jugar":
+            controlador.volverJugar();
+            txtRegistro.setText("");
+            break;
+        
+        // NUEVOS CASOS
+        case "guardar":
+            int confirmGuardar = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas guardar la partida actual?",
+                "Guardar Partida",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
             
-             case "defender":
-                    controlador.defender();
-                break;
+            if (confirmGuardar == JOptionPane.YES_OPTION) {
+                controlador.guardarPartida();
+                JOptionPane.showMessageDialog(
+                    this,
+                    "¡Partida guardada exitosamente!",
+                    "Guardar Partida",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+            break;
+        
+        case "volver_menu":
+            int confirmVolver = JOptionPane.showConfirmDialog(
+                this,
+                "¿Deseas volver al menú principal?\n(La partida se guardará automáticamente)",
+                "Volver al Menú",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+            
+            if (confirmVolver == JOptionPane.YES_OPTION) {
+                controlador.guardarPartidaAutomaticamente();
+                controlador.volverAlMenu();
+                this.dispose(); // Cierra la ventana de batalla
+            }
+            break;
 
-             case "habilidad":
-                    controlador.habilidad();
-                break;
-
-             case "Volver a Jugar":
-                    controlador.volverJugar();
-                    txtRegistro.setText("");//Para Limpiar por completo el JTextArea
-               break;
-
-            default:
-                break;
-        }
-
+        default:
+            break;
     }
+}
 
 
     public void actualizarPantalla(ArrayList<Heroe> listHeroes, ArrayList<Monstruo> listMonstruos) {

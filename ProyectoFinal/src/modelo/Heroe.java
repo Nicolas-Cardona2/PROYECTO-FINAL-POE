@@ -270,4 +270,8 @@ public class Heroe extends Personaje {
        return menorHp;//Devuelve valor de la posicion especifica del heroe con menos vida
     }
 
+    public Iterable<Habilidad> getHabilidades() {
+        return habilidades;
+    }
+
 }

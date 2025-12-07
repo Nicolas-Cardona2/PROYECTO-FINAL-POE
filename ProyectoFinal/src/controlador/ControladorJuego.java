@@ -3,11 +3,15 @@ package controlador;
  del modelo y la vista
  */
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import modelo.*;
+import util.GestorPartidas;
 import util.MusicaFondo;
+import vista.MenuPrincipal;
 import vista.VentanaBatalla;
+import vista.VentanaHistorial;
 
 
 public class ControladorJuego {
@@ -24,12 +28,16 @@ public class ControladorJuego {
     //nuevos atributos para hacer lo de los objetos
     private String objetoSeleccionado;
     private boolean modoUsoObjeto = false;
+    private MenuPrincipal menuPrincipal;
+    private GestorPartidas gestorPartidas;
+    private int turnoActual = 0;
 
     public ControladorJuego() {
         heroes = new ArrayList<>();
         monstruos = new ArrayList<>();
         musica = new MusicaFondo();
         batalla = new Batalla();
+        gestorPartidas = new GestorPartidas();
         objetoSeleccionado = null;
         modoUsoObjeto = false;
     }
@@ -97,10 +105,9 @@ public class ControladorJuego {
     }
 
     public void iniciarJuego() {
-        musica.reproducirMusica("ProyectoFinal\\src\\DragonQuest.wav");
-        crearPersonajes();
-        crearVista();
-    }
+    musica.reproducirMusica("ProyectoFinal\\src\\audio\\DragonQuest.wav");
+    mostrarMenuPrincipal();
+}
 
     public void crearPersonajes() {
         
@@ -267,6 +274,7 @@ public class ControladorJuego {
                 ex.printStackTrace();
              } finally {
                 ReinicioVariables();
+                incrementarTurno();
                 FinBatalla();
             }
           }
@@ -294,6 +302,7 @@ public class ControladorJuego {
                     ex.printStackTrace();
                 } finally {
                     ReinicioVariables();
+                    incrementarTurno();
                     FinBatalla();
                 }
             }
@@ -322,6 +331,7 @@ public class ControladorJuego {
                         ex.printStackTrace();
                 } finally {
                      ReinicioVariables();
+                     incrementarTurno();
                      FinBatalla();
                 }
               }
@@ -355,9 +365,130 @@ public class ControladorJuego {
     public void detenerMusica() {
         musica.detenerMusica();
     }
+    public void mostrarMenuPrincipal() {
+    menuPrincipal = new MenuPrincipal(this);
+    menuPrincipal.setVisible(true);
+    }
+
+    public void iniciarNuevaBatalla() {
+        turnoActual = 0; // Reiniciar contador de turnos
+        crearPersonajes();
+        crearVista();
+    }
+
+    public void abrirSistemaGremio() {
+        JOptionPane.showMessageDialog(menuPrincipal, "Sistema de Gremio - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void mostrarHistorial() {
+        VentanaHistorial ventanaHistorial = new VentanaHistorial(this);
+        ArrayList<Object[]> partidas = gestorPartidas.obtenerTodasLasPartidas();
+        
+        if (partidas.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                menuPrincipal,
+                "No hay partidas guardadas aún.",
+                "Historial Vacío",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+        
+        Object[][] datos = partidas.toArray(new Object[0][]);
+        ventanaHistorial.actualizarTabla(datos);
+        ventanaHistorial.setVisible(true);
+    }
+
+    public void guardarPartida() {
+        String id = gestorPartidas.guardarPartida(heroes, monstruos, turnoActual);
+        if (id != null) {
+            RegistroBatalla.RegistrarTextos("=== PARTIDA GUARDADA ===");
+            RegistroBatalla.RegistrarTextos("ID: " + id);
+            RegistroBatalla.RegistrarTextos("Turno: " + turnoActual);
+            RegistroBatalla.RegistrarTextos("Guardado exitoso en HistorialPartidas/partida_" + id + ".txt");
+        } else {
+            RegistroBatalla.RegistrarTextos("ERROR: No se pudo guardar la partida");
+        }
+    }
+
+    public void guardarPartidaAutomaticamente() {
+        RegistroBatalla.RegistrarTextos("=== GUARDADO AUTOMÁTICO ===");
+        guardarPartida();
+    }
+
+    public void volverAlMenu() {
+        if (ventana != null) {
+            ventana.dispose();
+            ventana = null;
+        }
+        heroes.clear();
+        monstruos.clear();
+        turnoActual = 0;
+        mostrarMenuPrincipal();
+    }
+
+    public void cargarPartida() {
+        ArrayList<Object[]> partidas = gestorPartidas.obtenerTodasLasPartidas();
+        
+        if (partidas.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                menuPrincipal,
+                "No hay partidas guardadas para cargar.",
+                "Sin Partidas",
+                JOptionPane.INFORMATION_MESSAGE
+            );
+            return;
+        }
+        
+        mostrarHistorial();
+    }
+
+    public void cargarPartidaPorId(String id) {
+        GestorPartidas.DatosPartida datos = gestorPartidas.cargarPartida(id);
+        
+        if (datos == null) {
+            JOptionPane.showMessageDialog(
+                null,
+                "Error al cargar la partida.",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        
+        // Cargar los datos
+        this.heroes = datos.heroes;
+        this.monstruos = datos.monstruos;
+        this.turnoActual = datos.turno;
+        
+        // Cerrar menú
+        if (menuPrincipal != null) {
+            menuPrincipal.dispose();
+        }
+        
+        // Crear vista con datos cargados
+        crearVista();
+        
+        RegistroBatalla.RegistrarTextos("=== PARTIDA CARGADA ===");
+        RegistroBatalla.RegistrarTextos("Fecha: " + datos.fecha);
+        RegistroBatalla.RegistrarTextos("Turno: " + datos.turno);
+    }
+
+    public boolean eliminarPartida(String id) {
+        boolean eliminado = gestorPartidas.eliminarPartida(id);
+        if (eliminado) {
+            System.out.println("Partida " + id + " eliminada del sistema");
+        }
+        return eliminado;
+    }
+
+    // Método para incrementar turno (llamar cuando termine cada turno)
+    public void incrementarTurno() {
+        turnoActual++;
+    }
 }
 
-
+    
 /* System.out.println(heroPosition + " - "+ monsterPosition);//Para ver Comportamiento de las posiciones
         FinalizarPartida = batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "atacar");
         ventana.actualizarPantalla(heroes,monstruos);
