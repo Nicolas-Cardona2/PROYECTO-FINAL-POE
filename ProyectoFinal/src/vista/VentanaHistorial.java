@@ -140,7 +140,6 @@ public class VentanaHistorial extends JFrame {
             }
             
             String id = modeloTabla.getValueAt(filaSeleccionada, 0).toString();
-            controlador.cargarPartidaPorId(id);
             this.dispose();
         });
         
@@ -167,18 +166,6 @@ public class VentanaHistorial extends JFrame {
                 JOptionPane.WARNING_MESSAGE
             );
             
-            if (confirmacion == JOptionPane.YES_OPTION) {
-                boolean eliminado = controlador.eliminarPartida(id);
-                if (eliminado) {
-                    modeloTabla.removeRow(filaSeleccionada);
-                    JOptionPane.showMessageDialog(
-                        this,
-                        "Partida eliminada exitosamente.",
-                        "Eliminación Exitosa",
-                        JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-            }
         });
         
         btnCerrar.addActionListener(e -> {

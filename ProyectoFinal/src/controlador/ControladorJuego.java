@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import modelo.*;
-import util.GestorPartidas;
 import util.MusicaFondo;
 import vista.MenuPrincipal;
 import vista.VentanaBatalla;
@@ -29,7 +28,6 @@ public class ControladorJuego {
     private String objetoSeleccionado;
     private boolean modoUsoObjeto = false;
     private MenuPrincipal menuPrincipal;
-    private GestorPartidas gestorPartidas;
     private int turnoActual = 0;
 
     public ControladorJuego() {
@@ -37,7 +35,6 @@ public class ControladorJuego {
         monstruos = new ArrayList<>();
         musica = new MusicaFondo();
         batalla = new Batalla();
-        gestorPartidas = new GestorPartidas();
         objetoSeleccionado = null;
         modoUsoObjeto = false;
     }
@@ -380,42 +377,6 @@ public class ControladorJuego {
         JOptionPane.showMessageDialog(menuPrincipal, "Sistema de Gremio - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void mostrarHistorial() {
-        VentanaHistorial ventanaHistorial = new VentanaHistorial(this);
-        ArrayList<Object[]> partidas = gestorPartidas.obtenerTodasLasPartidas();
-        
-        if (partidas.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                menuPrincipal,
-                "No hay partidas guardadas aún.",
-                "Historial Vacío",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            return;
-        }
-        
-        Object[][] datos = partidas.toArray(new Object[0][]);
-        ventanaHistorial.actualizarTabla(datos);
-        ventanaHistorial.setVisible(true);
-    }
-
-    public void guardarPartida() {
-        String id = gestorPartidas.guardarPartida(heroes, monstruos, turnoActual);
-        if (id != null) {
-            RegistroBatalla.RegistrarTextos("=== PARTIDA GUARDADA ===");
-            RegistroBatalla.RegistrarTextos("ID: " + id);
-            RegistroBatalla.RegistrarTextos("Turno: " + turnoActual);
-            RegistroBatalla.RegistrarTextos("Guardado exitoso en HistorialPartidas/partida_" + id + ".txt");
-        } else {
-            RegistroBatalla.RegistrarTextos("ERROR: No se pudo guardar la partida");
-        }
-    }
-
-    public void guardarPartidaAutomaticamente() {
-        RegistroBatalla.RegistrarTextos("=== GUARDADO AUTOMÁTICO ===");
-        guardarPartida();
-    }
-
     public void volverAlMenu() {
         if (ventana != null) {
             ventana.dispose();
@@ -428,59 +389,22 @@ public class ControladorJuego {
     }
 
     public void cargarPartida() {
-        ArrayList<Object[]> partidas = gestorPartidas.obtenerTodasLasPartidas();
-        
-        if (partidas.isEmpty()) {
-            JOptionPane.showMessageDialog(
-                menuPrincipal,
-                "No hay partidas guardadas para cargar.",
-                "Sin Partidas",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            return;
-        }
-        
-        mostrarHistorial();
+        JOptionPane.showMessageDialog(menuPrincipal, "Cargar partida - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public void cargarPartidaPorId(String id) {
-        GestorPartidas.DatosPartida datos = gestorPartidas.cargarPartida(id);
-        
-        if (datos == null) {
-            JOptionPane.showMessageDialog(
-                null,
-                "Error al cargar la partida.",
-                "Error",
-                JOptionPane.ERROR_MESSAGE
-            );
-            return;
-        }
-        
-        // Cargar los datos
-        this.heroes = datos.heroes;
-        this.monstruos = datos.monstruos;
-        this.turnoActual = datos.turno;
-        
-        // Cerrar menú
-        if (menuPrincipal != null) {
-            menuPrincipal.dispose();
-        }
-        
-        // Crear vista con datos cargados
-        crearVista();
-        
-        RegistroBatalla.RegistrarTextos("=== PARTIDA CARGADA ===");
-        RegistroBatalla.RegistrarTextos("Fecha: " + datos.fecha);
-        RegistroBatalla.RegistrarTextos("Turno: " + datos.turno);
-    }
-
-    public boolean eliminarPartida(String id) {
-        boolean eliminado = gestorPartidas.eliminarPartida(id);
-        if (eliminado) {
-            System.out.println("Partida " + id + " eliminada del sistema");
-        }
-        return eliminado;
-    }
+    public void mostrarHistorial() {
+    VentanaHistorial ventanaHistorial = new VentanaHistorial(this);
+    
+    // Datos de ejemplo mientras implementan GestorPartidas
+    Object[][] datosEjemplo = {
+        {"001", "2024-12-06 14:30", "15", "4/4", "2/4", "En Progreso"},
+        {"002", "2024-12-05 18:45", "23", "3/4", "0/4", "Victoria"},
+        {"003", "2024-12-05 12:20", "8", "0/4", "4/4", "Derrota"}
+    };
+    
+    ventanaHistorial.actualizarTabla(datosEjemplo);
+    ventanaHistorial.setVisible(true);
+}
 
     // Método para incrementar turno (llamar cuando termine cada turno)
     public void incrementarTurno() {

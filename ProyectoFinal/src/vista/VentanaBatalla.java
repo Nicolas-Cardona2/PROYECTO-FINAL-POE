@@ -418,7 +418,6 @@ public class VentanaBatalla extends JFrame {
             );
             
             if (confirmGuardar == JOptionPane.YES_OPTION) {
-                controlador.guardarPartida();
                 JOptionPane.showMessageDialog(
                     this,
                     "¡Partida guardada exitosamente!",
@@ -438,7 +437,6 @@ public class VentanaBatalla extends JFrame {
             );
             
             if (confirmVolver == JOptionPane.YES_OPTION) {
-                controlador.guardarPartidaAutomaticamente();
                 controlador.volverAlMenu();
                 this.dispose(); // Cierra la ventana de batalla
             }

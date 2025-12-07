@@ -148,7 +148,7 @@ public class MenuPrincipal extends JFrame {
         
         btnHistorial.addActionListener(e -> {
             controlador.mostrarHistorial();
-        });
+        });;
         
         btnSalir.addActionListener(e -> {
             int confirmacion = JOptionPane.showConfirmDialog(
