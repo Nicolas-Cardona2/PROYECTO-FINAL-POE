@@ -3,11 +3,14 @@ package controlador;
  del modelo y la vista
  */
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
 import modelo.*;
 import util.MusicaFondo;
+import vista.MenuPrincipal;
 import vista.VentanaBatalla;
+import vista.VentanaHistorial;
 
 
 public class ControladorJuego {
@@ -24,6 +27,8 @@ public class ControladorJuego {
     //nuevos atributos para hacer lo de los objetos
     private String objetoSeleccionado;
     private boolean modoUsoObjeto = false;
+    private MenuPrincipal menuPrincipal;
+    private int turnoActual = 0;
 
     public ControladorJuego() {
         heroes = new ArrayList<>();
@@ -97,10 +102,9 @@ public class ControladorJuego {
     }
 
     public void iniciarJuego() {
-        musica.reproducirMusica("ProyectoFinal\\src\\DragonQuest.wav");
-        crearPersonajes();
-        crearVista();
-    }
+    musica.reproducirMusica("ProyectoFinal\\src\\audio\\DragonQuest.wav");
+    mostrarMenuPrincipal();
+}
 
     public void crearPersonajes() {
         
@@ -267,6 +271,7 @@ public class ControladorJuego {
                 ex.printStackTrace();
              } finally {
                 ReinicioVariables();
+                incrementarTurno();
                 FinBatalla();
             }
           }
@@ -294,6 +299,7 @@ public class ControladorJuego {
                     ex.printStackTrace();
                 } finally {
                     ReinicioVariables();
+                    incrementarTurno();
                     FinBatalla();
                 }
             }
@@ -322,6 +328,7 @@ public class ControladorJuego {
                         ex.printStackTrace();
                 } finally {
                      ReinicioVariables();
+                     incrementarTurno();
                      FinBatalla();
                 }
               }
@@ -355,9 +362,57 @@ public class ControladorJuego {
     public void detenerMusica() {
         musica.detenerMusica();
     }
+    public void mostrarMenuPrincipal() {
+    menuPrincipal = new MenuPrincipal(this);
+    menuPrincipal.setVisible(true);
+    }
+
+    public void iniciarNuevaBatalla() {
+        turnoActual = 0; // Reiniciar contador de turnos
+        crearPersonajes();
+        crearVista();
+    }
+
+    public void abrirSistemaGremio() {
+        JOptionPane.showMessageDialog(menuPrincipal, "Sistema de Gremio - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void volverAlMenu() {
+        if (ventana != null) {
+            ventana.dispose();
+            ventana = null;
+        }
+        heroes.clear();
+        monstruos.clear();
+        turnoActual = 0;
+        mostrarMenuPrincipal();
+    }
+
+    public void cargarPartida() {
+        JOptionPane.showMessageDialog(menuPrincipal, "Cargar partida - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void mostrarHistorial() {
+    VentanaHistorial ventanaHistorial = new VentanaHistorial(this);
+    
+    // Datos de ejemplo mientras implementan GestorPartidas
+    Object[][] datosEjemplo = {
+        {"001", "2024-12-06 14:30", "15", "4/4", "2/4", "En Progreso"},
+        {"002", "2024-12-05 18:45", "23", "3/4", "0/4", "Victoria"},
+        {"003", "2024-12-05 12:20", "8", "0/4", "4/4", "Derrota"}
+    };
+    
+    ventanaHistorial.actualizarTabla(datosEjemplo);
+    ventanaHistorial.setVisible(true);
 }
 
+    // Método para incrementar turno (llamar cuando termine cada turno)
+    public void incrementarTurno() {
+        turnoActual++;
+    }
+}
 
+    
 /* System.out.println(heroPosition + " - "+ monsterPosition);//Para ver Comportamiento de las posiciones
         FinalizarPartida = batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "atacar");
         ventana.actualizarPantalla(heroes,monstruos);

@@ -41,6 +41,7 @@ public class Monstruo extends Personaje {
      }    
 }
 
+
     public void defensaHero(int defEvil,ArrayList <Heroe> listHeroes,int posicion){
 
      RegistroBatalla.RegistrarTextos(listHeroes.get(posicion).getNombre() + "Tiene: "+ listHeroes.get(posicion).getHP()+ " de HP");
@@ -135,6 +136,10 @@ public class Monstruo extends Personaje {
 
                 break;
         }
+    }
+
+    public Iterable<Habilidad> getHabilidades() {
+        return habilidades;
     }
 }
 
