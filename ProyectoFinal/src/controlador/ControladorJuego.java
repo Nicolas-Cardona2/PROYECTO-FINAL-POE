@@ -14,6 +14,7 @@ import util.MusicaFondo;
 import vista.MenuPrincipal;
 import vista.VentanaBatalla;
 import vista.VentanaHistorial;
+import vista.VentanaGremio;
 
 
 public class ControladorJuego {
@@ -22,6 +23,7 @@ public class ControladorJuego {
     private ArrayList<Monstruo> monstruos;
     private MusicaFondo musica;
     private VentanaBatalla ventana;
+    private SistemaGremio sistemaGremio;
     private Batalla batalla;
     private int heroPosition = -1;
     private int monsterPosition = -1;
@@ -39,6 +41,7 @@ public class ControladorJuego {
         monstruos = new ArrayList<>();
         musica = new MusicaFondo();
         batalla = new Batalla();
+        sistemaGremio = new SistemaGremio(); 
 
         objetoSeleccionado = null;
         modoUsoObjeto = false;
@@ -399,9 +402,25 @@ public class ControladorJuego {
     }
 
     public void abrirSistemaGremio() {
-        JOptionPane.showMessageDialog(menuPrincipal, "Sistema de Gremio - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
+        VentanaGremio ventanaGremio = new VentanaGremio(this, sistemaGremio);
+    ventanaGremio.setVisible(true);
     }
 
+        /**
+     * Obtiene el sistema de gremio
+     * retorna instancia del sistema de gremio
+     */
+    public SistemaGremio getSistemaGremio() {
+        return sistemaGremio;
+    }
+
+    /**
+     * Reinicia el sistema de gremio
+     * Útil cuando se inicia una nueva partida
+     */
+    public void reiniciarSistemaGremio() {
+        sistemaGremio.reiniciarSistema();
+    }
 
     public void volverAlMenu() {
         if (ventana != null) {
