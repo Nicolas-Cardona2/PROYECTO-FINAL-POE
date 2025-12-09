@@ -15,11 +15,13 @@ public class ManejoTxt{
 
         try {
             BufferedWriter bw = new BufferedWriter(new FileWriter("DatosHeroes.txt", true));
-           
-         //  for(int i =0; i < listHeroes.size();i++){
-                bw.write(listHeroes.get(0).getNombre()+"\n");
+           bw.write(" \n");//Salto DE Linea
+           for(int i =0; i < listHeroes.size();i++){
+                bw.write(listHeroes.get(i).getNombre()+"-"+listHeroes.get(i).getHP()+"-"+listHeroes.get(i).getMP()+"-"+listHeroes.get(i).getAtaque()
+                +"-"+listHeroes.get(i).getDefensa()+"-"+listHeroes.get(i).getVelocidad()+"-"
+                +"-"+listHeroes.get(i).getEstado()+"-"+listHeroes.get(i).getTurno()+"-"+"0"  +"\n");
                 bw.flush();//Vacia Buffer escribe realmente en el archivo
-           // }
+            }
            
             bw.close();
         } catch (IOException e) {
@@ -28,12 +30,6 @@ public class ManejoTxt{
 
     }
 
-
-    /*
-    "-"+listHeroes.get(i).getHP()+"-"+listHeroes.get(i).getMP()+"-"+listHeroes.get(i).getAtaque()
-                +"-"+listHeroes.get(i).getDefensa()+"-"+listHeroes.get(i).getVelocidad()+"-"+listHeroes.get(i).getTipoPersonaje()
-                +"-"+listHeroes.get(i).getEstado()+"-"+listHeroes.get(i).getTurno()+"-"+"0"  +
-    */
          
 
        /* try {
