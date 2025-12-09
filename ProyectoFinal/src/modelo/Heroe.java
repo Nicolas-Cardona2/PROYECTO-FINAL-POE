@@ -1,11 +1,8 @@
 package modelo;
 
 import java.util.*;
-
-
-import controlador.ControladorJuego;
-import modelo.ExcepcionesPersonalizadas.PersonajeMuerto;
 import modelo.ExcepcionesPersonalizadas.MpInsuficiente;
+import modelo.ExcepcionesPersonalizadas.PersonajeMuerto;
 public class Heroe extends Personaje {
    
     private int danoHero = 0, defHero = 0;
@@ -22,6 +19,37 @@ public class Heroe extends Personaje {
         this.catalogoObjetos = new HashMap<>();
         inicializarInventario();
     }
+
+    
+
+    public List<Habilidad> getHabilidades() {
+        return habilidades;
+    }
+
+
+
+    public void setHabilidades(List<Habilidad> habilidades) {
+        this.habilidades = habilidades;
+    }
+
+
+    public void setInventario(Map<String, Integer> inventario) {
+        this.inventario = inventario;
+    }
+
+
+
+    public Map<String, Objeto> getCatalogoObjetos() {
+        return catalogoObjetos;
+    }
+
+
+
+    public void setCatalogoObjetos(Map<String, Objeto> catalogoObjetos) {
+        this.catalogoObjetos = catalogoObjetos;
+    }
+
+
 
     public void inicializarInventario() {
         // Crear catálogo de objetos disponibles

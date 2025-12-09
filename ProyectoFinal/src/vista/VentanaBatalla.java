@@ -29,6 +29,8 @@ public class VentanaBatalla extends JFrame {
     private JButton botonMostrarInventarios;
     private JButton botonGuardarPartida;
     private JButton botonVolverMenu;
+    private JButton botonDeshacer;
+    private JButton botonRehacer;
 
     public VentanaBatalla(ArrayList<Heroe> heroes, ArrayList<Monstruo> monstruos, ControladorJuego controlador) {
         this.heroes = heroes;
@@ -205,6 +207,22 @@ public class VentanaBatalla extends JFrame {
         botonVolverJugar.setForeground(Color.WHITE);
         botonVolverJugar.setFocusPainted(false);
         panelBotones.add(botonVolverJugar);
+
+        botonDeshacer = new JButton("↶ Deshacer");
+        botonDeshacer.setFont(new Font("SansSerif", Font.BOLD, 14));
+        botonDeshacer.setBackground(new Color(90, 90, 70));
+        botonDeshacer.setForeground(Color.WHITE);
+        botonDeshacer.setFocusPainted(false);
+        botonDeshacer.addActionListener(e -> controlador.deshacer());
+        panelBotones.add(botonDeshacer);
+
+        botonRehacer = new JButton("↷ Rehacer");
+        botonRehacer.setFont(new Font("SansSerif", Font.BOLD, 14));
+        botonRehacer.setBackground(new Color(90, 90, 70));
+        botonRehacer.setForeground(Color.WHITE);
+        botonRehacer.setFocusPainted(false);
+        botonRehacer.addActionListener(e -> controlador.rehacer());
+        panelBotones.add(botonRehacer);
 
         setBotonAcciones(false);//Para Habilitar o Deshabilitar Botones
 

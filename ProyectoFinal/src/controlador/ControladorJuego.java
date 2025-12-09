@@ -3,9 +3,9 @@ package controlador;
  del modelo y la vista
  */
 import java.util.ArrayList;
-import java.util.Queue;
 import java.util.LinkedList;
-
+import java.util.Queue;
+import java.util.Stack;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
@@ -13,8 +13,8 @@ import modelo.*;
 import util.MusicaFondo;
 import vista.MenuPrincipal;
 import vista.VentanaBatalla;
-import vista.VentanaHistorial;
 import vista.VentanaGremio;
+import vista.VentanaHistorial;
 
 
 public class ControladorJuego {
@@ -25,6 +25,9 @@ public class ControladorJuego {
     private VentanaBatalla ventana;
     private SistemaGremio sistemaGremio;
     private Batalla batalla;
+    private Stack undoStack;
+    private Stack redoStack;
+
     private int heroPosition = -1;
     private int monsterPosition = -1;
     private int contadorSeleccion = 0;
@@ -45,7 +48,50 @@ public class ControladorJuego {
 
         objetoSeleccionado = null;
         modoUsoObjeto = false;
+
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
+
     }
+
+    public void deshacer() {
+        if (!undoStack.isEmpty()) {
+            EstadoJuego estado = (EstadoJuego) undoStack.pop();
+            redoStack.push(new EstadoJuego(heroes, monstruos, "Estado actual")); 
+            
+            heroes = estado.getHeroes();
+            monstruos = estado.getMonstruos();
+            
+            // CRÍTICO: Actualizar la interfaz
+            if (ventana != null) {
+                ventana.actualizarPantalla(heroes, monstruos);
+            }
+            
+            RegistroBatalla.RegistrarTextos("✓ Se deshizo: " + estado.getDescripcion());
+        } else {
+            RegistroBatalla.RegistrarTextos("✗ No hay acciones para deshacer");
+        }
+    }
+
+    public void rehacer() {
+        if (!redoStack.isEmpty()) {
+            EstadoJuego estado = (EstadoJuego) redoStack.pop();
+            undoStack.push(new EstadoJuego(heroes, monstruos, "Estado actual"));
+            
+            heroes = estado.getHeroes();
+            monstruos = estado.getMonstruos();
+            
+            // CRÍTICO: Actualizar la interfaz
+            if (ventana != null) {
+                ventana.actualizarPantalla(heroes, monstruos);
+            }
+            
+            RegistroBatalla.RegistrarTextos("✓ Se rehizo: " + estado.getDescripcion());
+        } else {
+            RegistroBatalla.RegistrarTextos("✗ No hay acciones para rehacer");
+        }
+    }
+
     //se hacen nuevos metodos para lo del manejo de los objetos en el juego
     public void activarModoObjetos(String nombreObjeto){
         this.objetoSeleccionado = nombreObjeto;
@@ -199,7 +245,7 @@ public class ControladorJuego {
 
         if(modoUsoObjeto && p instanceof Heroe){
             usarObjetoEnHeroe((Heroe) p);
-
+            return;
         }
 
     // Si es un héroe, instanceof permite saber si un objeto es perteneciente a alguna clase correspondiente a la que pertenezca su objeto especifico
@@ -243,8 +289,7 @@ public class ControladorJuego {
             if (h.getBoton() != null) {
                 h.getBoton().setEnabled(true);
             }
-        
-         }
+        }
     }
 
     public void enableMonsterButton(){
@@ -274,7 +319,8 @@ public class ControladorJuego {
     // aqui van todos los metodos que puede usar la vista y pues al rato se va acomodando bien a como lo teniamos antes
     //esto fue solo una prueba para ver si funcionaba o no
     public void atacar() {
-
+        undoStack.push(new EstadoJuego(heroes, monstruos, "Atacar"));
+        redoStack.clear();
 
         // Deshabilitar botones de interfaz mientras se ejecuta la batalla
          ventana.setBotonAcciones(false);
@@ -284,6 +330,7 @@ public class ControladorJuego {
          SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
          @Override
         protected Boolean doInBackground() throws Exception {
+
             // Se ejecuta la lógica del juego fuera del Event Dispatch Thread de swing para Ejecutar logica pesada en este otro hilo
             return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "atacar",0);
         }
@@ -306,14 +353,16 @@ public class ControladorJuego {
      }
 
     public void defender() {
-
+        undoStack.push(new EstadoJuego(heroes, monstruos, "Defender"));
+        redoStack.clear();
     // Deshabilitar botones de interfaz mientras se ejecuta la batalla
          ventana.setBotonAcciones(false);
          SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
              @Override
              protected Boolean doInBackground() throws Exception {
                   // Se ejecuta la lógica del juego fuera del Event Dispatch Thread de swing para Ejecutar logica pesada en este otro hilo 
-                 return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "defender",0);
+                  
+                  return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "defender",0);
           }
 
              @Override
@@ -334,15 +383,18 @@ public class ControladorJuego {
     }
 
     public void habilidad() {  
+
+
     // Deshabilitar botones de interfaz mientras se ejecuta la batalla
         ventana.setBotonAcciones(false);
-        
+        undoStack.push(new EstadoJuego(heroes, monstruos, "Atacar"));
+        redoStack.clear();
 
          SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
              @Override
               protected Boolean doInBackground() throws Exception {
                  int optionSkill =  menuHabilidades();
-               
+
                   // Se ejecuta la lógica del juego fuera del Event Dispatch Thread de swing para Ejecutar logica pesada en este otro hilo
                   return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "habilidad",optionSkill);
               }
