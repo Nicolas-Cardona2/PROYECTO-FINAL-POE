@@ -21,7 +21,7 @@ public class VentanaBatalla extends JFrame {
     private JPanel panelHeroes, panelMonstruos;
 
     private JTextArea txtRegistro;
-    private JButton botonAtk,botonDef,botonSkill,botonVolverJugar;
+    private JButton botonAtk,botonDef,botonSkill,botonVerDetalles,botonVolverJugar;
     //nuevo panel de objetos segun los objetos xd
     private JPanel panelObjetos;
     private JButton[] botonesObjetos;
@@ -176,6 +176,13 @@ public class VentanaBatalla extends JFrame {
         botonSkill.setForeground(Color.WHITE);
         botonSkill.setFocusPainted(false);
         panelBotones.add(botonSkill);
+
+        botonVerDetalles = new JButton(" Detalles");
+        botonVerDetalles.setFont(new Font("SansSerif", Font.BOLD, 16));
+        botonVerDetalles.setBackground(new Color(70, 70, 90));
+        botonVerDetalles.setForeground(Color.WHITE);
+        botonVerDetalles.setFocusPainted(false);
+        panelBotones.add(botonVerDetalles);
 
         // NUEVOS BOTONES
         botonGuardarPartida = new JButton("💾 Guardar Partida");
@@ -399,7 +406,7 @@ public class VentanaBatalla extends JFrame {
         botonDef.addActionListener(e -> ejecutarAccion("defender"));
         botonSkill.addActionListener(e -> ejecutarAccion("habilidad"));
         botonVolverJugar.addActionListener(e -> ejecutarAccion("Volver a Jugar"));
-        
+        botonVerDetalles.addActionListener(e -> ejecutarAccion("detalles"));
         // NUEVOS EVENTOS
         botonGuardarPartida.addActionListener(e -> ejecutarAccion("guardar"));
         botonVolverMenu.addActionListener(e -> ejecutarAccion("volver_menu"));
@@ -417,6 +424,10 @@ public class VentanaBatalla extends JFrame {
 
         case "habilidad":
             controlador.habilidad();
+            break;
+
+        case "detalles": //Para ver el Registro de aventureros registrados
+                  controlador.heroDetails();   
             break;
 
         case "Volver a Jugar":
@@ -441,6 +452,11 @@ public class VentanaBatalla extends JFrame {
                     "Guardar Partida",
                     JOptionPane.INFORMATION_MESSAGE
                 );
+                 if (confirmGuardar == JOptionPane.YES_OPTION) {
+                controlador.GuardarPartida();
+               // this.dispose(); // Cierra la ventana de batalla
+            }
+
             }
             break;
         

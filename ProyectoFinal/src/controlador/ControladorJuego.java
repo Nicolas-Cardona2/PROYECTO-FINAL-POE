@@ -32,6 +32,7 @@ public class ControladorJuego {
     private boolean modoUsoObjeto = false;
     private MenuPrincipal menuPrincipal;
     private int turnoActual = 0;
+    
 
     public ControladorJuego() {
         heroes = new ArrayList<>();
@@ -112,7 +113,7 @@ public class ControladorJuego {
 
     public void crearPersonajes() {
         
-        Heroe heroe1 = new Heroe("El Héroe", 40, 9, 22, 18, 12, TipoPersonajes.GUERRERO_BALANCEADO, "Muerto",0);
+        Heroe heroe1 = new Heroe("El Héroe", 40, 9, 22, 18, 12, TipoPersonajes.GUERRERO_BALANCEADO, "Vivo",0);
         Heroe heroe2 = new Heroe("Yangus", 50, 5, 28, 12, 8, TipoPersonajes.TANQUE, "Vivo",0);
         Heroe heroe3 = new Heroe("Jessica", 30, 20, 15, 9, 14, TipoPersonajes.MAGO_OFENSIVO, "Vivo",0);
         Heroe heroe4 = new Heroe("Angelo", 32, 15, 19, 14, 11, TipoPersonajes.SANADOR_APOYO, "Vivo",0);
@@ -162,6 +163,22 @@ public class ControladorJuego {
         //temporar pa ver si funciona esta vuelta
         heroe1.mostrarInventario();
         heroe2.mostrarInventario();
+    }
+
+    public void heroDetails(){
+        //Registro de aventureros registrados 
+        for(int i =0 ;i < heroes.size();i++){
+           RegistroBatalla.RegistrarTextos("Nombre: "+ heroes.get(i).getNombre());
+           RegistroBatalla.RegistrarTextos("HP: "+ heroes.get(i).getHP()); 
+           RegistroBatalla.RegistrarTextos("MP: "+ heroes.get(i).getMP());  
+           RegistroBatalla.RegistrarTextos("Atk: "+ heroes.get(i).getAtaque());  
+           RegistroBatalla.RegistrarTextos("Def: "+ heroes.get(i).getDefensa());  
+           RegistroBatalla.RegistrarTextos("Velocidad: "+ heroes.get(i).getVelocidad());  
+           RegistroBatalla.RegistrarTextos("TipoDeHeroe: "+ heroes.get(i).getTipoPersonaje());  
+           RegistroBatalla.RegistrarTextos("Estado: "+ heroes.get(i).getEstado());  
+           RegistroBatalla.RegistrarTextos("TurnosEstadoAlterado: "+ heroes.get(i).getTurno()); 
+            RegistroBatalla.RegistrarTextos(" ");//Salto de Linea
+        }
     }
 
     private void crearVista() {
@@ -464,6 +481,11 @@ public class ControladorJuego {
             String[] habilidades= skill.toArray(new String[0]);
             //Para cargar el menu con las habilidades respectivas
              return ventana.menuSkill(habilidades);//Devuelve la posicion de la habilidad especifica
+     }
+
+     public void GuardarPartida(){
+        ManejoTxt txt = new ManejoTxt();
+        txt.saveStateHero(heroes);
      }
 
 }

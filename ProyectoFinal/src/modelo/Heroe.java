@@ -189,6 +189,10 @@ public class Heroe extends Personaje {
             break;
 
         case "habilidad":
+             if(listHeroes.get(posicionHero).getMP() <=0){
+                throw new MpInsuficiente();//Lanza Excepcion de mp insuficiente
+             }else{
+
             if (habilidades.isEmpty()) {
                 System.out.println(getNombre() + " no tiene habilidades disponibles.");
                 break;
@@ -226,8 +230,10 @@ public class Heroe extends Personaje {
                    
                 }
 
-            } else {
-                System.out.println("Opción inválida. El turno se pierde.");
+                    } else {
+                      System.out.println("Opción inválida. El turno se pierde.");
+                     }
+
             }
             break;
 
@@ -239,8 +245,9 @@ public class Heroe extends Personaje {
 
         } catch (PersonajeMuerto e) {
             RegistroBatalla.RegistrarTextos("Error "+e.getMessage());
-        }
-                    
+        } catch (MpInsuficiente e){
+            RegistroBatalla.RegistrarTextos("Error "+e.getMessage());
+        }        
     }
 
  private int DeterminarPersonajeConMenosVida(ArrayList <Heroe> listHeroes){
