@@ -1,6 +1,6 @@
 package modelo;
 
-
+import modelo.ExcepcionesPersonalizadas.MpInsuficiente;
 
 public class Habilidad {
     private String nombre; // no es nombre de personaje sino de la habilidad jsjs
@@ -31,12 +31,13 @@ public class Habilidad {
     public TipoHabilidad getTipo() {
         return tipo;
     }
-
-    public boolean usar(Personaje jugador, Personaje objetivo){
-       
+                //Lanzo excepcion para cuando no hay suficiente MP
+    public boolean usar(Personaje jugador, Personaje objetivo)throws MpInsuficiente{
+        esVivo=true;
+        try {  
         if(jugador.getMP() < costoMp){
-             RegistroBatalla.RegistrarTextos(jugador.getNombre() + " no hay suficiente MP para tirar un ataque " + nombre);
-            esVivo=true;
+           //  RegistroBatalla.RegistrarTextos(jugador.getNombre() + " no hay suficiente MP para tirar un ataque " + nombre);
+             throw new MpInsuficiente();
         }else{
 
                 int random = (int)(Math.random() * 5 + 1);
@@ -115,48 +116,14 @@ public class Habilidad {
         }
        
          RegistroBatalla.RegistrarTextos(jugador.getNombre()+" Ha Quedado Con: "+ jugador.getMP()+" MP Disponible");
-        return esVivo;//Me devuelve un true o false para saber si el heroe o mostruo esta vivo o muerto
-    }
-          //Este metodo Muestra el gasto de MP dependiendo de cada personaje 
-     /*public void gastoMp(Personaje jugador){
-
-        switch (jugador.getNombre()) {
-            case "El Héroe":  //Gasta 3MP
-
-                            jugador.setMP(jugador.getMP() - costoMp);
-                break;
-
-             case "Yangus":  //Gasta 5MP
-                 jugador.setMP(jugador.getMP() - costoMp);
-                break;
-
-             case "Jessica":   //Gasta 4MP
-                 jugador.setMP(jugador.getMP() - costoMp);
-                break;
-             case "Angelo":   //Gasta 5MP
-                 jugador.setMP(jugador.getMP() - costoMp);
-                break;
-
-              case "SlimeBoy":  //Gasta 2MP
-                  jugador.setMP(jugador.getMP() - costoMp);
-                break;
-
-             case "Dragon":  //Gasta 6MP
-                 jugador.setMP(jugador.getMP() - costoMp);
-                break;
-
-             case "Esqueleto":   //Gasta 3MP
-                 jugador.setMP(jugador.getMP() - costoMp);
-                break;
-             case "Hechicero":   //Gasta 5MP
-                 jugador.setMP(jugador.getMP() - costoMp);
-                break;  
-        
-            default:
-                break;
+       
+    } catch (MpInsuficiente e) {
+            RegistroBatalla.RegistrarTextos("Error: "+e.getMessage());
         }
-         if(jugador.getMP()<=0) jugador.setMP(0);
-  }*/
+         return esVivo;//Me devuelve un true o false para saber si el heroe o mostruo esta vivo o muerto
+    
+    }
+          
     //Metodo que establece el daño magico de cada enemigo todo varia en su multiplicador de daño
 public int dañosMp(Personaje jugador,Personaje objetivo,int random){
   int danoMp=0; 

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
+import modelo.ExcepcionesPersonalizadas.MpInsuficiente;
+import modelo.ExcepcionesPersonalizadas.PersonajeMuerto;
+
 public abstract class Personaje {
 
     //ejemplo de como puede quedar la clase abstracta que le hereda a las hijas heroe y monstruo
@@ -147,7 +150,7 @@ public abstract class Personaje {
 
     }
 
-    public abstract void acciones(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nameBoton); // ya que debe haber mas acciones a parte de atacar se cambiara a Acciones
+    public abstract void acciones(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nameBoton,int optSkill)throws PersonajeMuerto,MpInsuficiente; // ya que debe haber mas acciones a parte de atacar se cambiara a Acciones
     
 
 }

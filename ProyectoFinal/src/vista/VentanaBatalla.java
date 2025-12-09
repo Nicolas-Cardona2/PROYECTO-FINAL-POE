@@ -317,6 +317,23 @@ public class VentanaBatalla extends JFrame {
     }
     return panel;
 }
+
+    public int menuSkill(String[] habilidades){
+        //Input de JOptionPane para practicidad y poder colocar las opciones dependiendo de las habilidades de cada heroe
+        int opcion = JOptionPane.showOptionDialog(
+        null,
+        "Elige una habilidad:",
+        "Habilidades",
+        JOptionPane.DEFAULT_OPTION,
+        JOptionPane.PLAIN_MESSAGE,
+        null,
+        habilidades,
+        habilidades[0]
+        );
+        return opcion;//Devuelve el valor de la posicion de la habilidad
+    }
+
+
 //metodos nuevos para los botones de los objetos y sisas eso
     private void deshabilitarBotonesObjetos() {
         for (JButton boton : botonesObjetos) {
@@ -428,7 +445,7 @@ public class VentanaBatalla extends JFrame {
             break;
         
         case "volver_menu":
-            int confirmVolver = JOptionPane.showConfirmDialog(
+                int confirmVolver = JOptionPane.showConfirmDialog(
                 this,
                 "¿Deseas volver al menú principal?\n(La partida se guardará automáticamente)",
                 "Volver al Menú",
