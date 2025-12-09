@@ -2,6 +2,9 @@ package modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import modelo.ExcepcionesPersonalizadas.MpInsuficiente;
+import modelo.ExcepcionesPersonalizadas.PersonajeMuerto;
 //import java.util.Scanner; // no creo que sea necesario pero lo dejo por futuras modificaciones posibles
  //trate de simplificar todo por eso se ve tan diferente de como estaba antes gracias
 public class Monstruo extends Personaje {
@@ -66,7 +69,7 @@ public class Monstruo extends Personaje {
 
 
     @Override
-    public void acciones(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nameBoton) {
+    public void acciones(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nameBoton,int optSkill)throws PersonajeMuerto,MpInsuficiente {
          RegistroBatalla.RegistrarTextos("\nTurno de " + listMonstruos.get(posicionMonster).getNombre() + ". Elige una acción:"+" Tiene "+ listMonstruos.get(posicionMonster).getMP()+" de MP");
         int accion = (int)(Math.random() * 3); //son 3 porque se cuenta desde la posicion 0
          int heroRandom=0;

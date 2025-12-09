@@ -3,6 +3,9 @@ package controlador;
  del modelo y la vista
  */
 import java.util.ArrayList;
+import java.util.Queue;
+import java.util.LinkedList;
+
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.SwingWorker;
@@ -29,12 +32,14 @@ public class ControladorJuego {
     private boolean modoUsoObjeto = false;
     private MenuPrincipal menuPrincipal;
     private int turnoActual = 0;
+    
 
     public ControladorJuego() {
         heroes = new ArrayList<>();
         monstruos = new ArrayList<>();
         musica = new MusicaFondo();
         batalla = new Batalla();
+
         objetoSeleccionado = null;
         modoUsoObjeto = false;
     }
@@ -125,9 +130,9 @@ public class ControladorJuego {
         heroe2.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
         heroe2.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
         heroe3.agregarHabilidad(new Habilidad("Bola de fuego", 4, 0, TipoHabilidad.DANIO_MAGICO));
-        heroe3.agregarHabilidad(new Habilidad("Stun Slash?", 4, 0, TipoHabilidad.PARALYSIS));
         heroe3.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
         heroe3.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));  
+        heroe3.agregarHabilidad(new Habilidad("Stun Slash", 4, 0, TipoHabilidad.PARALYSIS));
         heroe4.agregarHabilidad(new Habilidad("Curación", 3, 12, TipoHabilidad.CURACION));
         heroe4.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
         heroe4.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
@@ -144,6 +149,7 @@ public class ControladorJuego {
         monstruo4.agregarHabilidad(new Habilidad("Rayo de Fuego", 5, 0, TipoHabilidad.DANIO_MAGICO));
         monstruo4.agregarHabilidad(new Habilidad("Oomph", 5, 0, TipoHabilidad.BUFF_DE_ATAQUE));
         monstruo4.agregarHabilidad(new Habilidad("Buff", 5, 0, TipoHabilidad.BUFF_DE_DEFENSA));
+        monstruo4.agregarHabilidad(new Habilidad("Stun Slash", 4, 0, TipoHabilidad.PARALYSIS));
 
         heroes.add(heroe1);
         heroes.add(heroe2);
@@ -157,6 +163,22 @@ public class ControladorJuego {
         //temporar pa ver si funciona esta vuelta
         heroe1.mostrarInventario();
         heroe2.mostrarInventario();
+    }
+
+    public void heroDetails(){
+        //Registro de aventureros registrados 
+        for(int i =0 ;i < heroes.size();i++){
+           RegistroBatalla.RegistrarTextos("Nombre: "+ heroes.get(i).getNombre());
+           RegistroBatalla.RegistrarTextos("HP: "+ heroes.get(i).getHP()); 
+           RegistroBatalla.RegistrarTextos("MP: "+ heroes.get(i).getMP());  
+           RegistroBatalla.RegistrarTextos("Atk: "+ heroes.get(i).getAtaque());  
+           RegistroBatalla.RegistrarTextos("Def: "+ heroes.get(i).getDefensa());  
+           RegistroBatalla.RegistrarTextos("Velocidad: "+ heroes.get(i).getVelocidad());  
+           RegistroBatalla.RegistrarTextos("TipoDeHeroe: "+ heroes.get(i).getTipoPersonaje());  
+           RegistroBatalla.RegistrarTextos("Estado: "+ heroes.get(i).getEstado());  
+           RegistroBatalla.RegistrarTextos("TurnosEstadoAlterado: "+ heroes.get(i).getTurno()); 
+            RegistroBatalla.RegistrarTextos(" ");//Salto de Linea
+        }
     }
 
     private void crearVista() {
@@ -250,6 +272,7 @@ public class ControladorJuego {
     //esto fue solo una prueba para ver si funcionaba o no
     public void atacar() {
 
+
         // Deshabilitar botones de interfaz mientras se ejecuta la batalla
          ventana.setBotonAcciones(false);
          
@@ -259,7 +282,7 @@ public class ControladorJuego {
          @Override
         protected Boolean doInBackground() throws Exception {
             // Se ejecuta la lógica del juego fuera del Event Dispatch Thread de swing para Ejecutar logica pesada en este otro hilo
-            return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "atacar");
+            return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "atacar",0);
         }
 
         @Override
@@ -287,7 +310,7 @@ public class ControladorJuego {
              @Override
              protected Boolean doInBackground() throws Exception {
                   // Se ejecuta la lógica del juego fuera del Event Dispatch Thread de swing para Ejecutar logica pesada en este otro hilo 
-                 return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "defender");
+                 return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "defender",0);
           }
 
              @Override
@@ -315,8 +338,10 @@ public class ControladorJuego {
          SwingWorker<Boolean, Void> worker = new SwingWorker<>() {
              @Override
               protected Boolean doInBackground() throws Exception {
+                 int optionSkill =  menuHabilidades();
+               
                   // Se ejecuta la lógica del juego fuera del Event Dispatch Thread de swing para Ejecutar logica pesada en este otro hilo
-                  return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "habilidad");
+                  return batalla.EmpezarBatalla(heroes, monstruos, heroPosition, monsterPosition, "habilidad",optionSkill);
               }
 
                 @Override
@@ -377,6 +402,7 @@ public class ControladorJuego {
         JOptionPane.showMessageDialog(menuPrincipal, "Sistema de Gremio - En desarrollo", "Próximamente", JOptionPane.INFORMATION_MESSAGE);
     }
 
+
     public void volverAlMenu() {
         if (ventana != null) {
             ventana.dispose();
@@ -410,6 +436,58 @@ public class ControladorJuego {
     public void incrementarTurno() {
         turnoActual++;
     }
+
+    public int menuHabilidades(){
+        //Creacion de una cola con el nombre de habilidades
+        Queue<String> skill= new LinkedList();
+        //Dependiendo del heroe salen los botones respectivos para las habilidades
+        switch (heroes.get(heroPosition).getNombre()) {     
+       
+         case "El Héroe":  
+                skill.add("Golpe de espada");
+                skill.add("Oomph");
+                skill.add("Buff");
+
+                break;
+
+             case "Yangus": 
+                        skill.add("Golpe de Hacha");
+                        skill.add("Oomph");
+                        skill.add("Buff"); 
+                
+                break;
+
+             case "Jessica":   
+
+                        skill.add("Bola de fuego");
+                        skill.add("Oomph");
+                        skill.add("Buff");
+                        skill.add("Stun Slash");
+
+                break;
+             case "Angelo":  
+             
+                    skill.add("Curación");
+                    skill.add("Oomph");
+                    skill.add("Buff");
+                
+                break;
+
+            default:
+                break;
+
+             }
+                //Convierte cola a un array de String
+            String[] habilidades= skill.toArray(new String[0]);
+            //Para cargar el menu con las habilidades respectivas
+             return ventana.menuSkill(habilidades);//Devuelve la posicion de la habilidad especifica
+     }
+
+     public void GuardarPartida(){
+        ManejoTxt txt = new ManejoTxt();
+        txt.saveStateHero(heroes);
+     }
+
 }
 
     

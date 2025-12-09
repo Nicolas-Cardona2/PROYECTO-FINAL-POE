@@ -2,16 +2,17 @@ package modelo;
 
 import java.util.ArrayList;
 
-
+import modelo.ExcepcionesPersonalizadas.MpInsuficiente;
+import modelo.ExcepcionesPersonalizadas.PersonajeMuerto;
 
 public class Batalla {
     //Estos variables guardan los turnos de estos estado alterados
     private int turno=0,unaVez=1;
     private  boolean todosMonstruosDead=true,todosHeroesDead=true,todosPersonajesMurieron=true, endPartida=true;
-    ArrayList <Heroe> auxiliarHeroes;
-    ArrayList <Monstruo> auxiliarMonstruos;
+    private ArrayList <Heroe> auxiliarHeroes;
+    private ArrayList <Monstruo> auxiliarMonstruos;
 
-    public boolean EmpezarBatalla(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton){//Determinara quienes se enfrentan primero por medio de saber su velocidad
+    public boolean EmpezarBatalla(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton,int optionSkill)throws PersonajeMuerto,MpInsuficiente{//Determinara quienes se enfrentan primero por medio de saber su velocidad
        
         if(unaVez==1){//Guardar Valores Predeterminados de los Monstruos y Heroes
           
@@ -37,27 +38,36 @@ public class Batalla {
 
           unaVez=0;
         }
-      //Cuando terminar Partida sea False se acaba la partida 
+       
+        try {//Excepcion Personalizada Acerca si un personaje esta muerto
+          if(listHeroes.get(posicionHero).getEstado().equals("Muerto")|| listMonstruos.get(posicionMonster).equals("Muerto")){
+             throw new PersonajeMuerto();//Lanza Excepcion Personalizada Respecto a que esta muerto el personaje
+          }else{
+            //Cuando terminar Partida sea False se acaba la partida 
               //el heroe tiene velocidad mayor arranca turno primero de lo contrario arranca el monstruo
                 if(listHeroes.get(posicionHero).getVelocidad() > listMonstruos.get(posicionMonster).getVelocidad()){
                   RegistroBatalla.RegistrarTextos(listHeroes.get(posicionHero).getNombre() +" Es mas Rapido que "+  listMonstruos.get(posicionMonster).getNombre());
                    RegistroBatalla.RegistrarTextos(listHeroes.get(posicionHero).getNombre()+" Acciona Primero");
-                  TurnoHeroe(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton);
+                  TurnoHeroe(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton,optionSkill);
                    TerminarBatalla(listHeroes, listMonstruos);
-                   TurnoMounstro(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton);
+                   TurnoMounstro(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton, optionSkill);
                    TerminarBatalla(listHeroes, listMonstruos);
                 }else if(listMonstruos.get(posicionMonster).getVelocidad() > listHeroes.get(posicionHero).getVelocidad()){
                     RegistroBatalla.RegistrarTextos(listMonstruos.get(posicionMonster).getNombre() +" Es mas Rapido que "+  listHeroes.get(posicionHero).getNombre());
                    RegistroBatalla.RegistrarTextos(listMonstruos.get(posicionMonster).getNombre()+" Acciona Primero");
-                     TurnoMounstro(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton);
+                     TurnoMounstro(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton,optionSkill);
                     TerminarBatalla(listHeroes, listMonstruos);
-                     TurnoHeroe(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton);
+                     TurnoHeroe(listHeroes, listMonstruos, posicionHero, posicionMonster, nombreBoton,optionSkill);
                      TerminarBatalla(listHeroes, listMonstruos);
                 }
+          }
 
+        } catch (PersonajeMuerto e) {
+             
+              RegistroBatalla.RegistrarTextos("Error "+e.getMessage());
+          }
 
-
-                    //Si todos los monstruos mueren ha ganado el bando de los heroes
+            //Si todos los monstruos mueren ha ganado el bando de los heroes
               if(todosMonstruosDead==false){
                   
                    RegistroBatalla.RegistrarTextos(" ........ ");                
@@ -77,6 +87,7 @@ public class Batalla {
                 }
 
              return todosPersonajesMurieron;//Devuelve si los monstruos murieron o heroes murieron
+                
           }
            
 
@@ -97,7 +108,7 @@ public class Batalla {
           }
     }
 
-    public void TurnoHeroe(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton){//Programacion turno de los heroes
+    public void TurnoHeroe(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton,int optionSkill)throws PersonajeMuerto,MpInsuficiente{//Programacion turno de los heroes
       
         if(listMonstruos.get(0).getEstado().equals("Muerto") && listMonstruos.get(1).getEstado().equals("Muerto") && listMonstruos.get(2).getEstado().equals("Muerto") && listMonstruos.get(3).getEstado().equals("Muerto")){
                TerminarBatalla(listHeroes, listMonstruos);
@@ -107,10 +118,28 @@ public class Batalla {
                if(probabilidad >= 8){  //Probabilidad de despertarse 30%
                    RegistroBatalla.RegistrarTextos(listHeroes.get(posicionHero).getNombre() + " ¡Se ha Despertado!");
                     listHeroes.get(posicionHero).setEstado("Vivo");//Ya no esta dormido
-                    listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);//Procede a atakar al monstruo
+                    listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);//Procede a atakar al monstruo
                   }else{//En caso de que no se cumpla la condicion
                    RegistroBatalla.RegistrarTextos(listHeroes.get(posicionHero).getNombre() + " Sigue  Durmiendo....");
                }
+
+            }else if(listHeroes.get(posicionHero).getEstado().equals("Paralizado")){
+                  //Pone valor de atake por defecto
+                  listHeroes.get(posicionHero).setAtaque(auxiliarHeroes.get(posicionHero).getAtaque());
+                  //Esta linea lo que hace es volverle a poner el valor de defensa que tenia por defecto
+                  listHeroes.get(posicionHero).setDefensa(auxiliarHeroes.get(posicionHero).getDefensa());
+                  turno=listHeroes.get(posicionHero).getTurno();//Obtiene valor de turno asignado
+
+                   //Se gasta Turno del buff por cada Accion Realizada
+                    //Le resta de 1 en 1
+                    turno--;
+                    listHeroes.get(posicionHero).setTurno(turno);
+                if(listHeroes.get(posicionHero).getTurno()==0){
+                  //Esta linea lo que hace es volverle a poner el valor de velocidad que tenia por defecto
+                  listHeroes.get(posicionHero).setVelocidad(auxiliarHeroes.get(posicionHero).getVelocidad());
+                  listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
+                }
+               listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
 
             }else if(listHeroes.get(posicionHero).getEstado().equals("Defensa")){
                     
@@ -124,11 +153,12 @@ public class Batalla {
                             //Estas dos lineas lo que hacen es volverle a poner el valor de atake y defensa que tenian por defecto
                            listHeroes.get(posicionHero).setAtaque(auxiliarHeroes.get(posicionHero).getAtaque());
                            listHeroes.get(posicionHero).setDefensa(auxiliarHeroes.get(posicionHero).getDefensa());
+                            listHeroes.get(posicionHero).setVelocidad(auxiliarHeroes.get(posicionHero).getVelocidad());
                            listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
                           }
-                          listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                          listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
                     }else{
-                      listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                      listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
                     }
 
             }else if(listHeroes.get(posicionHero).getEstado().equals("BuffAtake")){
@@ -146,7 +176,7 @@ public class Batalla {
                   listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
                 }
 
-                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
            
            }else if(listHeroes.get(posicionHero).getEstado().equals("BuffDefensa")){
                 listHeroes.get(posicionHero).setAtaque(auxiliarHeroes.get(posicionHero).getAtaque());//Vuelve a su atk predeterminado
@@ -162,16 +192,16 @@ public class Batalla {
                   listHeroes.get(posicionHero).setEstado("Vivo");//Vuelve a su estado base
                 }
 
-                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
            
 
            } else{
-                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                listHeroes.get(posicionHero).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
             }
 
     }
 
-    public void TurnoMounstro(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton){//Programacion turno del Mounstruo
+    public void TurnoMounstro(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nombreBoton,int optionSkill)throws PersonajeMuerto,MpInsuficiente{//Programacion turno del Mounstruo
 
        if(listHeroes.get(0).getEstado().equals("Muerto") && listHeroes.get(1).getEstado().equals("Muerto") && listHeroes.get(2).getEstado().equals("Muerto") && listHeroes.get(3).getEstado().equals("Muerto")){
                 TerminarBatalla(listHeroes, listMonstruos);
@@ -190,11 +220,11 @@ public class Batalla {
                     turno--;
                     listMonstruos.get(posicionMonster).setTurno(turno);
                 if(listMonstruos.get(posicionMonster).getTurno()==0){
-                  //Esta linea lo que hace es volverle a poner el valor de atake que tenia por defecto
+                  //Esta linea lo que hace es volverle a poner el valor de velocidad que tenia por defecto
                   listMonstruos.get(posicionMonster).setVelocidad(auxiliarMonstruos.get(posicionMonster).getVelocidad());
                   listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
                 }
-               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
 
             }else if(listMonstruos.get(posicionMonster).getEstado().equals("Defensa")){
                     
@@ -205,14 +235,15 @@ public class Batalla {
                          listMonstruos.get(posicionMonster).setTurno(turno);  
                           //Para determinar Cuando ya se terminaron los turnos de esa Habilidad
                           if(listMonstruos.get(posicionMonster).getTurno()==0){
-                            //Estas dos lineas lo que hacen es volverle a poner el valor de atake y defensa que tenian por defecto
+                            //Estas dos lineas lo que hacen es volverle a poner el valor de atake , defensa y velocidad que tenian por defecto
                            listMonstruos.get(posicionMonster).setAtaque(auxiliarMonstruos.get(posicionMonster).getAtaque());
                            listMonstruos.get(posicionMonster).setDefensa(auxiliarMonstruos.get(posicionMonster).getDefensa());
+                             listMonstruos.get(posicionMonster).setVelocidad(auxiliarMonstruos.get(posicionMonster).getVelocidad());
                            listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
                           }
-                          listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                          listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
                     }else{
-                      listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                      listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
                     }
 
             }else if(listMonstruos.get(posicionMonster).getEstado().equals("BuffAtake")){
@@ -229,7 +260,7 @@ public class Batalla {
                   listMonstruos.get(posicionMonster).setAtaque(auxiliarMonstruos.get(posicionMonster).getAtaque());
                   listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
                 }
-               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
             
             }else if(listMonstruos.get(posicionMonster).getEstado().equals("BuffDefensa")){
                     //Vuelve a valor por defecto del atake
@@ -245,16 +276,16 @@ public class Batalla {
                   listMonstruos.get(posicionMonster).setDefensa(auxiliarMonstruos.get(posicionMonster).getDefensa());
                   listMonstruos.get(posicionMonster).setEstado("Vivo");//Vuelve a su estado base
                 }
-               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+               listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
 
             }else{
-                listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton);
+                listMonstruos.get(posicionMonster).acciones(listHeroes,listMonstruos,posicionHero,posicionMonster,nombreBoton,optionSkill);
                  System.out.println(" ");//Salto de linea
             }  
             
     }
        //Metodo que finaliza ronda Asumiendo que los heroes no escojieron nada entonces los monstruos tomaron sus desiciones de combate
-    public boolean FinalizarRonda(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,String nombreBoton){
+    public boolean FinalizarRonda(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,String nombreBoton,int optionSkill)throws PersonajeMuerto,MpInsuficiente{
           for(int i =0;i < listMonstruos.size();i++){
              
             if(listHeroes.get(0).getEstado().equals("Muerto") && listHeroes.get(1).getEstado().equals("Muerto") && listHeroes.get(2).getEstado().equals("Muerto") && listHeroes.get(3).getEstado().equals("Muerto")){
@@ -262,7 +293,7 @@ public class Batalla {
             }else if(listMonstruos.get(i).getEstado().equals("Muerto")){
                 continue;
             }else{
-                listMonstruos.get(i).acciones(listHeroes,listMonstruos,0,i,nombreBoton);
+                listMonstruos.get(i).acciones(listHeroes,listMonstruos,0,i,nombreBoton,optionSkill);
                  System.out.println(" ");//Salto de linea
             }  
              

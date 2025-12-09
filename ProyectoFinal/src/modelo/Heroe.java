@@ -2,6 +2,10 @@ package modelo;
 
 import java.util.*;
 
+
+import controlador.ControladorJuego;
+import modelo.ExcepcionesPersonalizadas.PersonajeMuerto;
+import modelo.ExcepcionesPersonalizadas.MpInsuficiente;
 public class Heroe extends Personaje {
    
     private int danoHero = 0, defHero = 0;
@@ -10,6 +14,7 @@ public class Heroe extends Personaje {
     //se agregan estos atributos para lo de los objetos de los personajes
     private Map<String, Integer> inventario;
     private Map<String, Objeto> catalogoObjetos;
+   
 
     public Heroe(String nombre, int HP, int MP,int ataque, int defensa, int velocidad,TipoPersonajes person, String estado,int turnos) {
         super(nombre, HP, MP, ataque, defensa, velocidad,person, estado,turnos);
@@ -149,11 +154,16 @@ public class Heroe extends Personaje {
 
 
     @Override
-    public void acciones(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nameBoton) {
+    public void acciones(ArrayList <Heroe> listHeroes, ArrayList <Monstruo> listMonstruos,int posicionHero,int posicionMonster,String nameBoton,int optSkill)throws PersonajeMuerto, MpInsuficiente {
          
         RegistroBatalla.RegistrarTextos("\nTurno de " + listHeroes.get(posicionHero).getNombre() + ". Elige una acción:"+" Tienes "+ listHeroes.get(posicionHero).getMP()+" de MP");
         String opcion = nameBoton;
 
+        try {//Excepcion para garantizar que si el heroe muere en el proceso el no pueda accionar porque esta muerto
+            if(listHeroes.get(posicionHero).getEstado().equals("Muerto")){
+                throw new PersonajeMuerto();//Lanza Excepcion Personalizada Respecto a que esta muerto el personaje
+            }else{
+        
         switch (opcion) {
             case "atacar":
           
@@ -179,12 +189,17 @@ public class Heroe extends Personaje {
             break;
 
         case "habilidad":
+             if(listHeroes.get(posicionHero).getMP() <=0){
+                throw new MpInsuficiente();//Lanza Excepcion de mp insuficiente
+             }else{
+
             if (habilidades.isEmpty()) {
                 System.out.println(getNombre() + " no tiene habilidades disponibles.");
                 break;
             } 
+
                 //Se escoje que habilidad Utilizar
-            int eleccion = 1;//Todos tienen una habilidad por ahora por lo tanto no tiene caso poner a escojer momentaneamente
+            int eleccion =  optSkill;//Todos tienen una habilidad por ahora por lo tanto no tiene caso poner a escojer momentaneamente
             if (eleccion >= 0 && eleccion < habilidades.size()) {
                 Habilidad habilidad = habilidades.get(eleccion);
 
@@ -193,7 +208,7 @@ public class Heroe extends Personaje {
                     int objetivo = DeterminarPersonajeConMenosVida(listHeroes);
                      
                     if (objetivo >= 0 && objetivo < listHeroes.size()) {
-                     habilidad.usar(this, listHeroes.get(objetivo));
+                     habilidad.usar(this, listHeroes.get(objetivo)) ;
                     } else {
                         System.out.println("Opción no válida.");
                      }
@@ -202,7 +217,7 @@ public class Heroe extends Personaje {
                     int objetivo = posicionMonster;
 
                              if (objetivo >= 0 && objetivo < listMonstruos.size()) {
-                                    vivoMonstruo= habilidad.usar(this, listMonstruos.get(objetivo));
+                                    vivoMonstruo= habilidad.usar(this, listMonstruos.get(objetivo)) ;
                                    
                                     //Si Devuelve false el monstruo murio de lo contrario no
                                 if(vivoMonstruo == false){
@@ -215,8 +230,10 @@ public class Heroe extends Personaje {
                    
                 }
 
-            } else {
-                System.out.println("Opción inválida. El turno se pierde.");
+                    } else {
+                      System.out.println("Opción inválida. El turno se pierde.");
+                     }
+
             }
             break;
 
@@ -224,7 +241,13 @@ public class Heroe extends Personaje {
             System.out.println("Opción inválida. El turno se pierde.");
             break;
                 }
-                    
+            }
+
+        } catch (PersonajeMuerto e) {
+            RegistroBatalla.RegistrarTextos("Error "+e.getMessage());
+        } catch (MpInsuficiente e){
+            RegistroBatalla.RegistrarTextos("Error "+e.getMessage());
+        }        
     }
 
  private int DeterminarPersonajeConMenosVida(ArrayList <Heroe> listHeroes){
@@ -268,10 +291,6 @@ public class Heroe extends Personaje {
        }
 
        return menorHp;//Devuelve valor de la posicion especifica del heroe con menos vida
-    }
-
-    public Iterable<Habilidad> getHabilidades() {
-        return habilidades;
     }
 
 }
